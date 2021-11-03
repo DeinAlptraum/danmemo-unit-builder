@@ -13,16 +13,11 @@ use crate::get_attributes::*;
 mod build_obj;
 use crate::build_obj::*;
 
-mod unit;
-use crate::unit::Unit;
-mod adventurer;
+mod objects;
+use crate::objects::{Unit,Assist};
 //use crate::adventurer::Adventurer;
-mod effect;
 //use crate::effect::Effect;
-mod ass_skill;
 //use crate::ass_skill::AssistSkill;
-mod assist;
-use crate::assist::Assist;
 
 /* To-Dos:
 

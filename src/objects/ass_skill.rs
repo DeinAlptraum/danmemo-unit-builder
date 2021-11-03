@@ -1,4 +1,4 @@
-use crate::effect::Effect;
+use crate::objects::Effect;
 
 pub struct AssistSkill {
     pub name: String,

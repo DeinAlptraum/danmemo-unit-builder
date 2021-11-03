@@ -1,5 +1,5 @@
 use crate::enums::*;
-use crate::unit::Unit;
+use crate::objects::Unit;
 
 pub struct Adventurer {
     pub unit: Unit,

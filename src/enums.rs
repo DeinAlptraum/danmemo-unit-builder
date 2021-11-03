@@ -49,7 +49,7 @@ impl AttackType {
 #[derive(PartialEq, Eq, Clone)]
 pub enum Target {
     Foes,
-    Foe,
+    //Foe,
     Allies,
     Auto,
 }
@@ -58,7 +58,7 @@ impl Target {
     pub fn to_json(&self) -> &str {
         match self {
             Target::Foes => "foes",
-            Target::Foe => "foe",
+            //Target::Foe => "foe",
             Target::Allies => "allies",
             Target::Auto => "self",
         }
@@ -67,7 +67,7 @@ impl Target {
     pub fn to_str(&self) -> &str {
         match self {
             Target::Foes => "Foes",
-            Target::Foe => "Foe",
+            //Target::Foe => "Foe",
             Target::Allies => "Allies",
             Target::Auto => "Self",
         }
