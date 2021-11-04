@@ -4,7 +4,7 @@ pub enum UnitType {
     Assist,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 pub enum Element {
     Light,
     Dark,
@@ -30,18 +30,18 @@ impl Element {
 }
 
 #[derive(PartialEq, Eq)]
-pub enum AttackType {
+pub enum AdventurerType {
     Physical,
     Magic,
     Balance,
 }
 
-impl AttackType {
+impl AdventurerType {
     pub fn to_json(&self) -> &str {
         match self {
-            AttackType::Physical => "physical_type",
-            AttackType::Magic => "magical_type",
-            AttackType::Balance => "balance_type",
+            AdventurerType::Physical => "physical_type",
+            AdventurerType::Magic => "magic_type",
+            AdventurerType::Balance => "balance_type",
         }
     }
 }
@@ -77,7 +77,7 @@ impl Target {
 #[derive(PartialEq, Eq, Clone)]
 pub enum Attribute {
     // Buffs & Debuffs
-    //Base Stats
+    // Base Stats
     Strength,
     Endurance,
     Dexterity,
@@ -89,6 +89,14 @@ pub enum Attribute {
     MagicResistance,
     AoEResistance,
     STResistance,
+
+    // Ailment resists
+    SleepResist,
+    StunResist,
+    SealResist,
+    SlowResist,
+    TauntResist,
+    PoisonResist,
 
     // Elementals
     LightResistance,
@@ -113,7 +121,10 @@ pub enum Attribute {
     CriticalRate,
     PenetrationRate,
 
-    //Effects
+    // Others
+    SACharge,
+
+    // Non-Buff/Debuff Effects
     // Heals
     Heal,
     HPRegen,
@@ -128,24 +139,14 @@ pub enum Attribute {
     Taunt,
     Poison,
 
-    SleepResist,
-    StunResist,
-    SealResist,
-    SlowResist,
-    TauntResist,
-    PoisonResist,
-
     // Nulls
     NullPhysical,
     NullMagical,
     NullAilment,
 
-    // (De)buffs
+    // (De)buff turns
     BuffTurns,
     DebuffTurns,
-
-    // Others
-    SACharge,
 }
 
 impl Attribute {
@@ -160,6 +161,12 @@ impl Attribute {
             Attribute::MagicResistance => "magic_resist",
             Attribute::AoEResistance => "all_damage_resist",
             Attribute::STResistance => "single_damage_resist",
+            Attribute::SleepResist => "sleep_resist",
+            Attribute::StunResist => "stun_resist",
+            Attribute::SealResist => "seal_resist",
+            Attribute::SlowResist => "slow_resist",
+            Attribute::TauntResist => "taunt_resist",
+            Attribute::PoisonResist => "poison_resist",
             Attribute::LightResistance => "light_resist",
             Attribute::DarkResistance => "dark_resist",
             Attribute::FireResistance => "fire_resist",
@@ -178,6 +185,8 @@ impl Attribute {
             Attribute::CounterRate => "counter_rate",
             Attribute::CriticalRate => "critical_rate",
             Attribute::PenetrationRate => "penetration_rate",
+            Attribute::SACharge => "sa_gauge_charge",
+
             Attribute::Heal => "HP Heal",
             Attribute::HPRegen => "hp_regen",
             Attribute::MPRegen => "mp_regen",
@@ -188,18 +197,11 @@ impl Attribute {
             Attribute::Slow => "slow",
             Attribute::Taunt => "taunt",
             Attribute::Poison => "poison",
-            Attribute::SleepResist => "sleep_resist",
-            Attribute::StunResist => "stun_resist",
-            Attribute::SealResist => "seal_resist",
-            Attribute::SlowResist => "slow_resist",
-            Attribute::TauntResist => "taunt_resist",
-            Attribute::PoisonResist => "poison_resist",
             Attribute::NullPhysical => "null_physical_attack_no_special",
             Attribute::NullMagical => "null_magic_attack_no_special",
             Attribute::NullAilment => "null_ailments",
             Attribute::BuffTurns => "status_buff",
             Attribute::DebuffTurns => "status_debuff",
-            Attribute::SACharge => "sa_gauge_charge",
         }
     }
 

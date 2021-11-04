@@ -1,3 +1,4 @@
+// Header
 pub const HEADER1: &str = "{
     \"title\": \"$0\",
     \"name\": \"$1\",";
@@ -9,6 +10,7 @@ pub const HEADER2: &str = "
     \"stars\": $0,
     \"limited\": $1,";
 
+// Stats
 pub const STATS_HP: &str = "
     \"stats\": {
         \"hp\": [
@@ -28,6 +30,7 @@ pub const STATS_MP: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_PAT: &str = "
         \"physical_attack\": [
             $0,
@@ -37,6 +40,7 @@ pub const STATS_PAT: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_MAT: &str = "
         \"magic_attack\": [
             $0,
@@ -46,6 +50,7 @@ pub const STATS_MAT: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_DEF: &str = "
         \"defense\": [
             $0,
@@ -55,6 +60,7 @@ pub const STATS_DEF: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_STR: &str = "
         \"strength\": [
             $0,
@@ -64,6 +70,7 @@ pub const STATS_STR: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_END: &str = "
         \"endurance\": [
             $0,
@@ -73,6 +80,7 @@ pub const STATS_END: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_DEX: &str = "
         \"dexterity\": [
             $0,
@@ -82,6 +90,7 @@ pub const STATS_DEX: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_AGI: &str = "
         \"agility\": [
             $0,
@@ -91,6 +100,7 @@ pub const STATS_AGI: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_MAG: &str = "
         \"magic\": [
             $0,
@@ -102,6 +112,7 @@ pub const STATS_MAG: &str = "
         ]
     },";
 
+// Assist Skills
 pub const ASS_SKILLS_HEAD: &str = "    
     \"skills\": [
         {
@@ -113,10 +124,7 @@ pub const ASS_EFFECT: &str = "
                     \"attribute\": \"$1\",
                     \"modifier\": \"$2\"
                 }";
-/*                {
-\"target\": \"foes/allies/self\",
-\"attribute\": \"second_attribute\",
-\"modifier\": \"-+0\"*/
+
 pub const ASS_FOOT_SKILL_ONE: &str = "
             ]
         },";
@@ -124,21 +132,14 @@ pub const ASS_SKILL_TWO_HEAD: &str = "
         {
             \"name\": \"$0++\",
             \"effects\": [";
-/*                {
-    \"target\": \"foes/allies/self\",
-    \"attribute\": \"first_attribute\",
-    \"modifier\": \"-+0\"
-},
-{
-    \"target\": \"foes/allies/self\",
-    \"attribute\": \"second_attribute\",
-    \"modifier\": \"-+0\"*/
+
 pub const ASS_FOOT: &str = "
             ]
         }
     ]
 }";
 
+// Adventurer Skills
 pub const ADVSA: &str = "
     \"skills\": {
         \"special\": {

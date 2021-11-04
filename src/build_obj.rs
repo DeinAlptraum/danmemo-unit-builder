@@ -1,6 +1,5 @@
-use crate::objects::{Effect, AssistSkill, Unit, Assist, Adventurer};
 use crate::get_attributes::*;
-
+use crate::objects::{Adventurer, Assist, AssistSkill, Effect, Unit};
 
 pub fn build_unit() -> Unit {
     let unit_type = get_unit_type();
@@ -17,7 +16,7 @@ pub fn build_unit() -> Unit {
     let mag = get_six_stats("magic");
 
     let mut unit = Unit::new();
-    unit.u_type = unit_type;
+    unit.unit_type = unit_type;
     unit.title = title;
     unit.name = name;
     unit.stars = stars;
@@ -58,8 +57,10 @@ fn build_ass_skill() -> AssistSkill {
         for ef in base_effects.iter() {
             println!("{}", ef.to_str());
         }
-        println!("Does the skill have another effect? (y: yes, anything else: no)");
-        if read_str() != "y" {
+
+        println!("Does the skill have another effect? (n/no: no, anything else: yes)");
+        let ans = read_str();
+        if ans == "n" || ans == "no" {
             break;
         }
     }

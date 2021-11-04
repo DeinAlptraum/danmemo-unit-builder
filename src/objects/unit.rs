@@ -1,7 +1,7 @@
 use crate::enums::*;
 
 pub struct Unit {
-    pub u_type: UnitType,
+    pub unit_type: UnitType,
     pub title: String,
     pub name: String,
     pub stars: i32,
@@ -18,7 +18,7 @@ pub struct Unit {
 impl Unit {
     pub fn new() -> Unit {
         Unit {
-            u_type: UnitType::Adventurer,
+            unit_type: UnitType::Adventurer,
             title: String::new(),
             name: String::new(),
             stars: 0,

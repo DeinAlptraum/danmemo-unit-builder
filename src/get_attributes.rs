@@ -20,6 +20,7 @@ pub fn read_str() -> String {
 }
 
 // getters
+// Header
 pub fn get_unit_type() -> UnitType {
     println!("Adventurer or Assist? (1: Adventurer, 2: Assist)");
     let input = read_num();
@@ -45,13 +46,13 @@ pub fn get_name() -> String {
     name
 }
 
-pub fn get_attack_type() -> AttackType {
+pub fn get_attack_type() -> AdventurerType {
     println!("Which type is the adventurer? (1: Physical, 2: Magic, 3: Balance)");
     let at_type = read_num();
     let at_type = match at_type {
-        1 => AttackType::Physical,
-        2 => AttackType::Magic,
-        3 => AttackType::Balance,
+        1 => AdventurerType::Physical,
+        2 => AdventurerType::Magic,
+        3 => AdventurerType::Balance,
         _ => panic!("Please enter a number from 1 to 3"),
     };
     at_type
@@ -79,6 +80,7 @@ pub fn get_limited() -> bool {
     limited
 }
 
+// Stats
 pub fn get_six_stats(stat: &str) -> Vec<String> {
     let mut l: Vec<String> = Vec::new();
     println!("How much {} does the unit have at base?", stat);
@@ -92,14 +94,14 @@ pub fn get_six_stats(stat: &str) -> Vec<String> {
     l
 }
 
-// Assist (skill) stuff
+// Assist Skill
 pub fn get_ass_skill_name() -> String {
     println!("What is the name of the assist's skill? (without '+' at the end)");
     let name = read_str();
     name
 }
 
-// Assist effect stuff
+// Assist Effect
 pub fn get_ass_target(attr: &Attribute) -> Target {
     let target = match attr {
         Attribute::Sleep
@@ -189,19 +191,19 @@ pub fn get_ass_attribute() -> Attribute {
     println!("8: Misc (Guard Rate, SA charge etc.");
     let submenu = read_num();
     match submenu {
-        1 => return get_ass_base_attr(),
-        2 => return get_ass_res_attr(),
-        3 => return get_ass_aoe_st_attr(),
-        4 => return get_ass_el_attr(),
-        5 => return get_ass_heal_attr(),
-        6 => return get_ass_ail_attr(),
-        7 => return get_ass_null_turns_attr(),
-        8 => return get_ass_misc_attr(),
+        1 => return get_ass_attr_base(),
+        2 => return get_ass_attr_res(),
+        3 => return get_ass_attr_aoe_st(),
+        4 => return get_ass_attr_el(),
+        5 => return get_ass_attr_heal(),
+        6 => return get_ass_attr_ail(),
+        7 => return get_ass_attr_null_turns(),
+        8 => return get_ass_attr_misc(),
         _ => panic!("Please enter a number from 1 to 7"),
     }
 }
 
-fn get_ass_base_attr() -> Attribute {
+fn get_ass_attr_base() -> Attribute {
     println!("Which attribute does it affect?\n1: Strength\t2: Magic\n3: Agility\t4: Dexterity\t5: Endurance");
     let attr = read_num();
     match attr {
@@ -214,7 +216,7 @@ fn get_ass_base_attr() -> Attribute {
     }
 }
 
-fn get_ass_res_attr() -> Attribute {
+fn get_ass_attr_res() -> Attribute {
     println!(
         "Which resistance does it affect?\n1: Physical Resistance\t2: Magic Resistance
         3: Light Resistance\t4: Dark Resistance\t5: Fire Resistance\t6: Water Resistance
@@ -243,7 +245,7 @@ fn get_ass_res_attr() -> Attribute {
     }
 }
 
-fn get_ass_aoe_st_attr() -> Attribute {
+fn get_ass_attr_aoe_st() -> Attribute {
     println!("What type of damage does it affect? 1: All Targets Damage\t2: Single Target Damage");
     let attr = read_num();
     match attr {
@@ -253,7 +255,7 @@ fn get_ass_aoe_st_attr() -> Attribute {
     }
 }
 
-fn get_ass_el_attr() -> Attribute {
+fn get_ass_attr_el() -> Attribute {
     println!(
         "Which element's damage does it affect?
         1: Light\t2: Dark\t3: Fire\t4: Water\t5: Thunder\t6: Earth\t7: Wind"
@@ -271,7 +273,7 @@ fn get_ass_el_attr() -> Attribute {
     }
 }
 
-fn get_ass_heal_attr() -> Attribute {
+fn get_ass_attr_heal() -> Attribute {
     println!(
         "How does it affect healing/what sort of healing does it do?
         1: HP Heal\t2: HP Regen\t3: MP Regen\t4: Healing Rate"
@@ -286,7 +288,7 @@ fn get_ass_heal_attr() -> Attribute {
     }
 }
 
-fn get_ass_ail_attr() -> Attribute {
+fn get_ass_attr_ail() -> Attribute {
     println!(
         "What ailment does it inflict?
         1: Sleep\t2: Stun\t3: Seal\t4: Slow\t5: Taunt\t6: Poison"
@@ -303,7 +305,7 @@ fn get_ass_ail_attr() -> Attribute {
     }
 }
 
-fn get_ass_null_turns_attr() -> Attribute {
+fn get_ass_attr_null_turns() -> Attribute {
     println!(
         "What does it affect?
         1: Physical Nulls\t2: Magic Nulls\t3: Ailment Nulls\t4: Buff Turns\t5: Debuff Turns"
@@ -319,7 +321,7 @@ fn get_ass_null_turns_attr() -> Attribute {
     }
 }
 
-fn get_ass_misc_attr() -> Attribute {
+fn get_ass_attr_misc() -> Attribute {
     println!(
         "What does it affect?\n1: Guard Rate, 2: Counter Rate, 3: Critical Rate, 4: Penetration Rate, 5: SA Charge Gauge Gain"
     );

@@ -14,24 +14,12 @@ mod build_obj;
 use crate::build_obj::*;
 
 mod objects;
-use crate::objects::{Unit,Assist};
-//use crate::adventurer::Adventurer;
-//use crate::effect::Effect;
-//use crate::ass_skill::AssistSkill;
-
-/* To-Dos:
-
- * to_string() Trait for enums & delete module crate::enum_to_str?
- * better attackType / skillType distinction??
- *
- * effect struct
- * ass-skil & adv-skill struct
-*/
+use crate::objects::{Assist, Effect, Unit};
 
 fn main() {
     let unit = build_unit();
 
-    if unit.u_type == UnitType::Assist {
+    if unit.unit_type == UnitType::Assist {
         gen_ass(unit);
     } else {
         gen_adv(unit);
@@ -69,11 +57,11 @@ fn file_name_from_unit(unit: &Unit) -> String {
     file_name
 }
 
-//Generate JSON
+// JSON Generator functions
 fn gen_header(unit: &Unit) -> String {
     let mut res = template_replace(HEADER1, &[&unit.title, &unit.name]);
 
-    if unit.u_type == UnitType::Adventurer {
+    if unit.unit_type == UnitType::Adventurer {
         res.push_str(ATTACKTYPE);
     }
 
@@ -86,7 +74,7 @@ fn gen_header(unit: &Unit) -> String {
     res
 }
 
-fn stat_list_borrows(stat: &Vec<String>) -> Vec<&str> {
+fn borrow_string_list(stat: &Vec<String>) -> Vec<&str> {
     let mut stat_str: Vec<&str> = Vec::new();
     for i in 0..6 {
         stat_str.push(&(stat[i]));
@@ -95,22 +83,14 @@ fn stat_list_borrows(stat: &Vec<String>) -> Vec<&str> {
     stat_str
 }
 
-/*fn borrow_list(ls: &Vec<String>) -> Vec<&str> {
-    let mut res: Vec<&str> =
-    for el in ls.iter() {
-
-    }
-    vec!("hi")
-}*/
-
 fn gen_stats(unit: &Unit) -> String {
-    let hp = stat_list_borrows(&unit.hp);
-    let mp = stat_list_borrows(&unit.mp);
-    let stg = stat_list_borrows(&unit.strength);
-    let end = stat_list_borrows(&unit.endurance);
-    let dex = stat_list_borrows(&unit.dexterity);
-    let agi = stat_list_borrows(&unit.agility);
-    let mag = stat_list_borrows(&unit.magic);
+    let hp = borrow_string_list(&unit.hp);
+    let mp = borrow_string_list(&unit.mp);
+    let stg = borrow_string_list(&unit.strength);
+    let end = borrow_string_list(&unit.endurance);
+    let dex = borrow_string_list(&unit.dexterity);
+    let agi = borrow_string_list(&unit.agility);
+    let mag = borrow_string_list(&unit.magic);
 
     let mut res = template_replace(STATS_HP, &hp);
     res.push_str(&template_replace(STATS_MP, &mp));
@@ -126,13 +106,9 @@ fn gen_stats(unit: &Unit) -> String {
     res
 }
 
-/*fn gen_ass_effect(ef: &Effect) -> String {
-
-}*/
-
-fn gen_ass_skill(ass: &Assist) -> String {
-    let mut res = template_replace(ASS_SKILLS_HEAD, &[&ass.skill.name]);
-    for ef in ass.skill.base_effects.iter() {
+fn gen_ass_effects(efs: &Vec<Effect>) -> String {
+    let mut res = String::new();
+    for ef in efs.iter() {
         res.push_str(&template_replace(
             ASS_EFFECT,
             &[
@@ -141,42 +117,31 @@ fn gen_ass_skill(ass: &Assist) -> String {
                 &ef.modifier.to_string(),
             ],
         ));
-        if ef != ass.skill.base_effects.last().unwrap() {
+        if ef != efs.last().unwrap() {
             res.push_str(",")
         }
     }
+
+    res
+}
+
+fn gen_ass_skill(ass: &Assist) -> String {
+    let mut res = template_replace(ASS_SKILLS_HEAD, &[&ass.skill.name]);
+
+    let base_effects = gen_ass_effects(&ass.skill.base_effects);
+    res.push_str(&base_effects);
 
     res.push_str(ASS_FOOT_SKILL_ONE);
     res.push_str(&template_replace(ASS_SKILL_TWO_HEAD, &[&ass.skill.name]));
 
-    for ef in ass.skill.mlb_effects.iter() {
-        res.push_str(&template_replace(
-            ASS_EFFECT,
-            &[
-                &ef.target.to_json(),
-                &ef.attribute.to_json(),
-                &ef.mod_to_str(),
-            ],
-        ));
-        if ef != ass.skill.mlb_effects.last().unwrap() {
-            res.push_str(",")
-        }
-    }
+    let mlb_effects = gen_ass_effects(&ass.skill.mlb_effects);
+    res.push_str(&mlb_effects);
 
     res.push_str(ASS_FOOT);
 
     res
 }
 
-/*fn gen_adv_skills() {
-
-}
-
-fn gen_dev_skills() {
-
-}*/
-
-// JSON Generation
 fn gen_ass(unit: Unit) {
     let ass = build_ass(unit);
 
@@ -192,6 +157,14 @@ fn gen_ass(unit: Unit) {
     let ass_skills = gen_ass_skill(&ass);
     wri(&file, &ass_skills);
 }
+
+/*fn gen_adv_skills() {
+
+}
+
+fn gen_dev_skills() {
+
+}*/
 
 fn gen_adv(unit: Unit) {
     let adv = build_adv(unit);
@@ -221,14 +194,15 @@ fn gen_adv(unit: Unit) {
     wri(&file, &stats);
 
     let at_type_str = match &adv.a_type {
-        AttackType::Physical => "physical_attack".to_string(),
-        AttackType::Magic => "magic_attack".to_string(),
-        AttackType::Balance => "physical_attack/magic_attack".to_string(),
+        AdventurerType::Physical => "physical_attack",
+        AdventurerType::Magic => "magic_attack",
+        AdventurerType::Balance => "physical_attack/magic_attack",
     };
-    let el_str = el.to_json().to_string();
 
-    let sa_text = template_replace(ADVSA, &[&el_str, &at_type_str]);
-    let skill_text = template_replace(ADVSKILL, &[&el_str, &at_type_str]);
+    let el_str = el.to_json();
+
+    let sa_text = template_replace(ADVSA, &[el_str, at_type_str]);
+    let skill_text = template_replace(ADVSKILL, &[el_str, at_type_str]);
     wri(&file, &sa_text);
 
     wri(&file, &skill_text);

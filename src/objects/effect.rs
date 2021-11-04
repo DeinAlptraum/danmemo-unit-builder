@@ -1,22 +1,10 @@
 use crate::enums::{Attribute, Target};
 
-#[derive(Eq, Clone)]
+#[derive(PartialEq, Eq, Clone)]
 pub struct Effect {
     pub attribute: Attribute,
     pub target: Target,
     pub modifier: i32,
-}
-
-impl PartialEq for Effect {
-    fn eq(&self, other: &Self) -> bool {
-        self.attribute == other.attribute
-            && self.target == other.target
-            && self.modifier == other.modifier
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        !(self == other)
-    }
 }
 
 impl Effect {
