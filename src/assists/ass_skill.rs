@@ -1,9 +1,9 @@
-use crate::objects::Effect;
+use crate::AssistEffect;
 
 pub struct AssistSkill {
     pub name: String,
-    pub base_effects: Vec<Effect>,
-    pub mlb_effects: Vec<Effect>,
+    pub base_effects: Vec<AssistEffect>,
+    pub mlb_effects: Vec<AssistEffect>,
 }
 
 impl AssistSkill {

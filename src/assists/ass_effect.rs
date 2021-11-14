@@ -1,15 +1,16 @@
 use crate::enums::{Attribute, Target};
+use crate::HumanReadable;
 
 #[derive(PartialEq, Eq, Clone)]
-pub struct Effect {
-    pub attribute: Attribute,
+pub struct AssistEffect {
     pub target: Target,
+    pub attribute: Attribute,
     pub modifier: i32,
 }
 
-impl Effect {
-    pub fn new() -> Effect {
-        Effect {
+impl AssistEffect {
+    pub fn new() -> AssistEffect {
+        AssistEffect {
             attribute: Attribute::Strength,
             target: Target::Auto,
             modifier: 0,

@@ -140,68 +140,237 @@ pub const ASS_FOOT: &str = "
 }";
 
 // Adventurer Skills
-pub const ADVSA: &str = "
+// SA Skill
+pub const SAHEADER: &str = "
     \"skills\": {
         \"special\": {
-            \"name\": \"sa-skill-name:\",
-            \"effects\": [
+            \"name\": \"$0:\",
+            \"effects\": [";
+
+// Dmg Effect
+pub const SADMG: &str = "
                 {
-                    \"target\": \"foes/foe (if applicable)\",
-                    \"modifier\": \"ultra/super etc.\",
                     \"element\": \"$0\",
-                    \"type\": \"$1\"
-                },
+                    \"modifier\": \"$1\",
+                    \"type\": \"$2\",
+                    \"target\": \"$3\",
+                    \"attribute\": \"None\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SATMPBOOST: &str = "
                 {
+                    \"modifier\":\"$0\",
                     \"target\":\"skill\",
-                    \"modifier\":\"great_mag_temp/great_str_temp/mag_temp/str_temp (if applicable)\"
-                },
+                    \"attribute\": \"None\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SARATEBUFF: &str = "
                 {
+                    \"modifier\": \"ultra\",
                     \"target\": \"skill\",
-                    \"attribute\": \"penetration_rate/unguard_rate etc. (if applicable)\",
-                    \"modifier\": \"high/ultra etc.\"
-                },
+                    \"attribute\": \"$0\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SALIFESTEAL: &str = "
                 {
-                    \"target\": \"self/allies/foe/foes\",
-                    \"duration\": \"0\",
-                    \"attribute\": \"attribute-name\",
-                    \"modifier\": \"-+0\"
-                }
+                    \"modifier\": \"$0\",
+                    \"target\": \"skill\",
+                    \"attribute\": \"life_steal\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SAPEB: &str = "
+                {
+                    \"modifier\": \"+$0\",
+                    \"target\": \"skill\",
+                    \"attribute\": \"$1\",
+                    \"speed\": \"None\"
+                }";
+
+// Non-dmg skill effects
+pub const SABUFF: &str = "
+                {
+                    \"duration\": \"$0\",
+                    \"modifier\": \"$1\",
+                    \"target\": \"$2\",
+                    \"attribute\": \"$3\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SABUFFREMOVE: &str = "
+                {
+                    \"target\": \"$0\",
+                    \"attribute\": \"$1\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SABUFFTURNS: &str = "
+                {
+                    \"duration\": \"$0\",
+                    \"target\": \"$1\",
+                    \"attribute\": \"$2\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SANULL: &str = "
+                {
+                    \"modifier\": \"$0\",
+                    \"target\": \"$1\",
+                    \"attribute\": \"$2\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SAHEAL: &str = "
+                {
+                    \"modifier\": \"$0\",
+                    \"target\": \"$1\",
+                    \"attribute\": \"$2\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SAAIL: &str = "
+                {
+                    \"modifier\": \"$0\",
+                    \"target\": \"$1\",
+                    \"attribute\": \"$2\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SAAILCURE: &str = "
+                {
+                    \"target\": \"allies\",
+                    \"attribute\": \"ailment_cure\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SAFOOTER: &str = "
             ]
-        },
+        },";
+
+// Regular Skills
+pub const COMBATHEADER: &str = "
         \"combat\": [";
 
-pub const ADVSKILL: &str = "
+pub const REGHEADER: &str = "
             {
-                \"name\": \"skill-name:\",
-                \"effects\": [
+                \"name\": \"$0:\"
+                \"effects\": [";
+
+// Dmg Effect
+pub const REGDMG: &str = "
                     {
-                        \"target\": \"self/allies/foe/foes\",
-                        \"speed\": \"fast/slow/none\",
-                        \"modifier\": \"low/medium/high/super\",
                         \"element\": \"$0\",
-                        \"type\": \"$1\"
-                    },
+                        \"modifier\": \"$1\",
+                        \"type\": \"$2\",
+                        \"target\": \"$3\",
+                        \"attribute\": \"None\",
+                        \"speed\": \"$4\"
+                    }";
+
+pub const REGTMPBOOST: &str = "
                     {
+                        \"modifier\":\"$0\",
                         \"target\":\"skill\",
-                        \"modifier\":\"great_mag_temp/great_str_temp/mag_temp/str_temp (if applicable)\"
-                    },
+                        \"attribute\": \"None\",
+                        \"speed\": \"None\"
+                    }";
+
+pub const REGRATEBUFF: &str = "
                     {
+                        \"modifier\": \"ultra\",
                         \"target\": \"skill\",
-                        \"attribute\": \"penetration_rate/unguard_rate etc. (if applicable)\",
-                        \"modifier\": \"high/ultra etc.\"
-                    },
+                        \"attribute\": \"$0\",
+                        \"speed\": \"None\"
+                    }";
+
+pub const REGLIFESTEAL: &str = "
                     {
-                        \"target\": \"self/allies/foe/foes\",
-                        \"attribute\": \"\",
-                        \"modifier\": \"-+0\",
-                        \"duration\": \"0\"
-                    },
+                        \"modifier\": \"$0\",
+                        \"target\": \"skill\",
+                        \"attribute\": \"life_steal\",
+                        \"speed\": \"None\"
+                    }";
+
+pub const REGPEB: &str = "
+                    {
+                        \"modifier\": \"+$0\",
+                        \"target\": \"skill\",
+                        \"attribute\": \"$1\",
+                        \"speed\": \"None\"
+                    }";
+
+// Non-dmg skill effects
+pub const REGBUFF: &str = "
+                    {
+                        \"duration\": \"$0\",
+                        \"modifier\": \"$1\",
+                        \"target\": \"$2\",
+                        \"attribute\": \"$3\",
+                        \"speed\": \"$4\"
+                    }";
+
+pub const REGBUFFREMOVE: &str = "
+                    {
+                        \"target\": \"$0\",
+                        \"attribute\": \"$1\",
+                        \"speed\": \"$2\"
+                    }";
+
+pub const REGBUFFTURNS: &str = "
+                    {
+                        \"duration\": \"$0\",
+                        \"target\": \"$1\",
+                        \"attribute\": \"$2\",
+                        \"speed\": \"$3\"
+                    }";
+
+pub const REGNULL: &str = "
+                    {
+                        \"modifier\": \"$0\",
+                        \"target\": \"$1\",
+                        \"attribute\": \"$2\",
+                        \"speed\": \"$3\"
+                    }";
+
+pub const REGHEAL: &str = "
+                    {
+                        \"modifier\": \"$0\",
+                        \"target\": \"$1\",
+                        \"attribute\": \"$2\",
+                        \"speed\": \"$3\"
+                    }";
+
+pub const REGAIL: &str = "
+                    {
+                        \"modifier\": \"$0\",
+                        \"target\": \"$1\",
+                        \"attribute\": \"$2\",
+                        \"speed\": \"$3\"
+                    }";
+
+pub const REGAILCURE: &str = "
+                    {
+                        \"target\": \"allies\",
+                        \"attribute\": \"ailment_cure\",
+                        \"speed\": \"$0\"
+                    }";
+
+/*pub const REGADDACT: &str = "
                     {
                         \"target\":\"self\",
                         \"duration\":\"+number-of-actions\",
                         \"attribute\":\"Additional action (if applicable, just paste full text in these braces)\"
-                    }
-                ]";
+                    }";*/
+
+pub const REGFOOTER: &str = "
+                ]
+            }";
+
+pub const COMBATFOOTER: &str = "
+        ],";
 
 pub const DEVSKILLS: &str = "
             }

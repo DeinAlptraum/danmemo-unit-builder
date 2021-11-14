@@ -1,4 +1,5 @@
-use crate::objects::{AssistSkill, Unit};
+use crate::AssistSkill;
+use crate::Unit;
 
 pub struct Assist {
     pub unit: Unit,
