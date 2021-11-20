@@ -1,8 +1,9 @@
 use crate::adventurer_effects::{
-    Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, Null, PerEffectBuff,
+    AdditionalAction, Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null,
+    PerEffectBuff, RateBuff,
 };
-use crate::enums::{DamageType, Element, RateAttribute, Speed, TempBoost, UnitType};
-use crate::{Adventurer, AdventurerSkill, json_strings::*};
+use crate::enums::{DamageType, Element, Speed, TempBoost, UnitType};
+use crate::{json_strings::*, Adventurer, AdventurerSkill};
 use crate::{Assist, AssistEffect, Unit};
 use regex::{Captures, Regex};
 
@@ -121,33 +122,27 @@ pub fn gen_adv_header(adv: &Adventurer) -> String {
 
 // Skill effect generators
 // Damaging effect generators
-fn gen_dmg_ef(is_sa: bool, ef: &Damaging, dt: &DamageType, el: &Element, spd: &Speed) -> String {
-    let mut res = String::new();
-    if is_sa {
-        let sa_dmg = template_replace(
-            SADMG,
-            &[
-                el.to_json(),
-                ef.dmg_mod.to_json(),
-                dt.to_json(),
-                ef.target.to_json(),
-                spd.to_json(),
-            ],
-        );
-        res.push_str(&sa_dmg);
-    } else {
-        let reg_dmg = template_replace(
-            REGDMG,
-            &[
-                el.to_json(),
-                ef.dmg_mod.to_json(),
-                dt.to_json(),
-                ef.target.to_json(),
-                spd.to_json(),
-            ],
-        );
-        res.push_str(&reg_dmg);
-    }
+fn gen_dmg_ef(
+    is_sa: bool,
+    ef: &Damaging,
+    dt: &DamageType,
+    el: &Element,
+    spd: &Speed,
+    ef_count: &mut u32,
+) -> String {
+    let res = gen_effect(
+        ef_count,
+        is_sa,
+        SADMG,
+        REGDMG,
+        &[
+            el.to_json(),
+            ef.dmg_mod.to_json(),
+            dt.to_json(),
+            ef.target.to_json(),
+            spd.to_json(),
+        ],
+    );
     res
 }
 
@@ -158,43 +153,23 @@ fn gen_temp_boost(
     ef_count: &mut u32,
 ) -> String {
     if let Some(tb) = o_tb {
-        let mut res = String::new();
-        if *ef_count > 0 {
-            res.push_str(",");
-        }
-
-        let tb_ef;
-        if is_sa {
-            tb_ef = template_replace(SATMPBOOST, &[tb.to_json(dt)]);
-        } else {
-            tb_ef = template_replace(REGTMPBOOST, &[tb.to_json(dt)]);
-        }
-
-        res.push_str(&tb_ef);
-        *ef_count += 1;
-        return res;
+        let res = gen_effect(ef_count, is_sa, SATMPBOOST, REGTMPBOOST, &[tb.to_json(dt)]);
+        res
     } else {
         return String::from("");
     }
 }
 
-fn gen_rate_buff(is_sa: bool, o_ra: &Option<RateAttribute>, ef_count: &mut u32) -> String {
+fn gen_rate_buff(is_sa: bool, o_ra: &Option<RateBuff>, ef_count: &mut u32) -> String {
     if let Some(ra) = o_ra {
-        let mut res = String::new();
-        if *ef_count > 0 {
-            res.push_str(",");
-        }
-
-        let rb_ef;
-        if is_sa {
-            rb_ef = template_replace(SARATEBUFF, &[ra.to_json()]);
-        } else {
-            rb_ef = template_replace(REGRATEBUFF, &[ra.to_json()]);
-        }
-
-        res.push_str(&rb_ef);
-        *ef_count += 1;
-        return res;
+        let res = gen_effect(
+            ef_count,
+            is_sa,
+            SARATEBUFF,
+            REGRATEBUFF,
+            &[ra.modifier.to_json(), ra.attribute.to_json()],
+        );
+        res
     } else {
         return String::from("");
     }
@@ -202,42 +177,37 @@ fn gen_rate_buff(is_sa: bool, o_ra: &Option<RateAttribute>, ef_count: &mut u32) 
 
 fn gen_lifesteal(is_sa: bool, o_ls: &Option<u32>, ef_count: &mut u32) -> String {
     if let Some(ls) = o_ls {
-        let mut res = String::new();
-        if *ef_count > 0 {
-            res.push_str(",");
-        }
-
-        let ls_ef;
-        if is_sa {
-            ls_ef = template_replace(SALIFESTEAL, &[&ls.to_string()]);
-        } else {
-            ls_ef = template_replace(REGLIFESTEAL, &[&ls.to_string()]);
-        }
-
-        res.push_str(&ls_ef);
-        *ef_count += 1;
-        return res;
+        let res = gen_effect(
+            ef_count,
+            is_sa,
+            SALIFESTEAL,
+            REGLIFESTEAL,
+            &[&ls.to_string()],
+        );
+        res
     } else {
         return String::from("");
     }
 }
 
-fn gen_per_ef_buff(is_sa: bool, peb: &PerEffectBuff, ef_count: &mut u32) -> String {
-    let mut res = String::new();
-    if *ef_count > 0 {
-        res.push_str(",");
-    }
+fn gen_per_ef_buffs(is_sa: bool, o_peb: &Option<PerEffectBuff>, ef_count: &mut u32) -> String {
+    if let Some(peb) = o_peb {
+        let mut res = String::new();
+        for attr in &peb.attributes {
+            let single_ef = gen_effect(
+                ef_count,
+                is_sa,
+                SAPEB,
+                REGPEB,
+                &[&peb.modifier.to_string(), &peb.to_json(attr)],
+            );
+            res.push_str(&single_ef);
+        }
 
-    let peb_ef;
-    if is_sa {
-        peb_ef = template_replace(SAPEB, &[&peb.to_json(), &peb.modifier.to_string()]);
+        res
     } else {
-        peb_ef = template_replace(REGPEB, &[&peb.to_json(), &peb.modifier.to_string()]);
+        return String::from("");
     }
-
-    res.push_str(&peb_ef);
-    *ef_count += 1;
-    return res;
 }
 
 fn gen_damaging(
@@ -253,7 +223,7 @@ fn gen_damaging(
         if *ef_count > 0 {
             res.push_str(",");
         }
-        let dmg_ef = gen_dmg_ef(is_sa, ef, dt, el, spd);
+        let dmg_ef = gen_dmg_ef(is_sa, ef, dt, el, spd, ef_count);
         res.push_str(&dmg_ef);
 
         let tb = gen_temp_boost(is_sa, &ef.temp_boost, dt, ef_count);
@@ -265,10 +235,8 @@ fn gen_damaging(
         let ls = gen_lifesteal(is_sa, &ef.lifesteal, ef_count);
         res.push_str(&ls);
 
-        for peb in &ef.per_effect_buffs {
-            let peb_ef = gen_per_ef_buff(is_sa, &peb, ef_count);
-            res.push_str(&peb_ef);
-        }
+        let peb_ef = gen_per_ef_buffs(is_sa, &ef.per_effect_boost, ef_count);
+        res.push_str(&peb_ef);
 
         *ef_count += 1;
         return res;
@@ -287,165 +255,79 @@ fn mod_to_json(modi: i32) -> String {
 }
 
 fn gen_buff(is_sa: bool, buff: &Buff, spd: &Speed, ef_count: &mut u32) -> String {
-    let mut res = String::new();
-    if *ef_count > 0 {
-        res.push_str(",");
-    }
-
-    let buff_ef;
-    if is_sa {
-        buff_ef = template_replace(
-            SABUFF,
-            &[
-                &buff.duration.to_string(),
-                &mod_to_json(buff.modifier),
-                &buff.target.to_json(),
-                &buff.attribute.to_json(),
-                &spd.to_json(),
-            ],
-        );
-    } else {
-        buff_ef = template_replace(
-            REGBUFF,
-            &[
-                &buff.duration.to_string(),
-                &mod_to_json(buff.modifier),
-                &buff.target.to_json(),
-                &buff.attribute.to_json(),
-                &spd.to_json(),
-            ],
-        );
-    }
-
-    res.push_str(&buff_ef);
-    *ef_count += 1;
+    let res = gen_effect(
+        ef_count,
+        is_sa,
+        SABUFF,
+        REGBUFF,
+        &[
+            &buff.duration.to_string(),
+            &mod_to_json(buff.modifier),
+            &buff.target.to_json(),
+            &buff.attribute.to_json(),
+            &spd.to_json(),
+        ],
+    );
     return res;
 }
 
 fn gen_buff_removal(is_sa: bool, br: &BuffRemove, spd: &Speed, ef_count: &mut u32) -> String {
-    let mut res = String::new();
-    if *ef_count > 0 {
-        res.push_str(",");
-    }
-
-    let br_ef;
-    if is_sa {
-        br_ef = template_replace(
-            SABUFFREMOVE,
-            &[&br.target.to_json(), &br.attr_to_json(), &spd.to_json()],
-        );
-    } else {
-        br_ef = template_replace(
-            REGBUFFREMOVE,
-            &[&br.target.to_json(), &br.attr_to_json(), &spd.to_json()],
-        );
-    }
-
-    res.push_str(&br_ef);
-    *ef_count += 1;
-    return res;
+    let res = gen_effect(
+        ef_count,
+        is_sa,
+        SABUFFREMOVE,
+        REGBUFFREMOVE,
+        &[&br.target.to_json(), &br.attr_to_json(), &spd.to_json()],
+    );
+    res
 }
 
 fn gen_buff_turns(is_sa: bool, bt: &BuffTurns, spd: &Speed, ef_count: &mut u32) -> String {
-    let mut res = String::new();
-    if *ef_count > 0 {
-        res.push_str(",");
-    }
-
-    let bt_ef;
-    if is_sa {
-        bt_ef = template_replace(
-            SABUFFTURNS,
-            &[
-                &mod_to_json(bt.n_turns),
-                &bt.target.to_json(),
-                &bt.kind.to_json_long(),
-                &spd.to_json(),
-            ],
-        );
-    } else {
-        bt_ef = template_replace(
-            REGBUFFTURNS,
-            &[
-                &mod_to_json(bt.n_turns),
-                &bt.target.to_json(),
-                &bt.kind.to_json_long(),
-                &spd.to_json(),
-            ],
-        );
-    }
-
-    res.push_str(&bt_ef);
-    *ef_count += 1;
-    return res;
+    let res = gen_effect(
+        ef_count,
+        is_sa,
+        SABUFFTURNS,
+        REGBUFFTURNS,
+        &[
+            &mod_to_json(bt.n_turns),
+            &bt.target.to_json(),
+            &bt.kind.to_json_long(),
+            &spd.to_json(),
+        ],
+    );
+    res
 }
 
 fn gen_null(is_sa: bool, null: &Null, spd: &Speed, ef_count: &mut u32) -> String {
-    let mut res = String::new();
-    if *ef_count > 0 {
-        res.push_str(",");
-    }
-
-    let null_ef;
-    if is_sa {
-        null_ef = template_replace(
-            SANULL,
-            &[
-                &null.mod_to_json(),
-                &null.target.to_json(),
-                &null.kind.to_json(),
-                &spd.to_json(),
-            ],
-        );
-    } else {
-        null_ef = template_replace(
-            REGNULL,
-            &[
-                &null.mod_to_json(),
-                &null.target.to_json(),
-                &null.kind.to_json(),
-                &spd.to_json(),
-            ],
-        );
-    }
-
-    res.push_str(&null_ef);
-    *ef_count += 1;
-    return res;
+    let res = gen_effect(
+        ef_count,
+        is_sa,
+        SANULL,
+        REGNULL,
+        &[
+            &null.mod_to_json(),
+            &null.target.to_json(),
+            &null.kind.to_json(),
+            &spd.to_json(),
+        ],
+    );
+    res
 }
 
 fn gen_heal(is_sa: bool, o_heal: &Option<Heal>, spd: &Speed, ef_count: &mut u32) -> String {
     if let Some(heal) = o_heal {
-        let mut res = String::new();
-        if *ef_count > 0 {
-            res.push_str(",");
-        }
-
-        let heal_ef;
-        if is_sa {
-            heal_ef = template_replace(
-                SAHEAL,
-                &[
-                    &heal.modifier.to_json(),
-                    &heal.target.to_json(),
-                    &heal.heal_type.to_json(),
-                    &spd.to_json(),
-                ],
-            );
-        } else {
-            heal_ef = template_replace(
-                REGHEAL,
-                &[
-                    &heal.modifier.to_json(),
-                    &heal.target.to_json(),
-                    &heal.heal_type.to_json(),
-                    &spd.to_json(),
-                ],
-            );
-        }
-
-        res.push_str(&heal_ef);
-        *ef_count += 1;
+        let res = gen_effect(
+            ef_count,
+            is_sa,
+            SAHEAL,
+            REGHEAL,
+            &[
+                &heal.modifier.to_json(),
+                &heal.target.to_json(),
+                &heal.heal_type.to_json(),
+                &spd.to_json(),
+            ],
+        );
         return res;
     } else {
         return String::from("");
@@ -453,74 +335,108 @@ fn gen_heal(is_sa: bool, o_heal: &Option<Heal>, spd: &Speed, ef_count: &mut u32)
 }
 
 fn gen_ailment(is_sa: bool, ail: &Ailment, spd: &Speed, ef_count: &mut u32) -> String {
-    let mut res = String::new();
-    if *ef_count > 0 {
-        res.push_str(",");
-    }
-
-    let ail_ef;
-    if is_sa {
-        ail_ef = template_replace(
-            SAAIL,
-            &[
-                &ail.chance.to_string(),
-                &ail.target.to_json(),
-                &ail.kind.to_json(),
-                &spd.to_json(),
-            ],
-        );
-    } else {
-        ail_ef = template_replace(
-            REGAIL,
-            &[
-                &ail.chance.to_string(),
-                &ail.target.to_json(),
-                &ail.kind.to_json(),
-                &spd.to_json(),
-            ],
-        );
-    }
-
-    res.push_str(&ail_ef);
-    *ef_count += 1;
-    return res;
+    let res = gen_effect(
+        ef_count,
+        is_sa,
+        SAAIL,
+        REGAIL,
+        &[
+            &ail.chance.to_string(),
+            &ail.target.to_json(),
+            &ail.kind.to_json(),
+            &spd.to_json(),
+        ],
+    );
+    res
 }
 
 fn gen_ailment_cure(is_sa: bool, has_cure: bool, spd: &Speed, ef_count: &mut u32) -> String {
     if has_cure {
-        let mut res = String::new();
-        if *ef_count > 0 {
-            res.push_str(",");
-        }
-
-        let ail_cure_ef;
-        if is_sa {
-            ail_cure_ef = template_replace(SAAILCURE, &[&spd.to_json()]);
-        } else {
-            ail_cure_ef = template_replace(REGAILCURE, &[&spd.to_json()]);
-        }
-
-        res.push_str(&ail_cure_ef);
-        *ef_count += 1;
+        let res = gen_effect(ef_count, is_sa, SAAILCURE, REGAILCURE, &[spd.to_json()]);
         return res;
     } else {
         return String::from("");
     }
 }
 
+fn gen_kill_resist(
+    is_sa: bool,
+    o_kr: &Option<KillResist>,
+    spd: &Speed,
+    ef_count: &mut u32,
+) -> String {
+    if let Some(kr) = o_kr {
+        let res = gen_effect(
+            ef_count,
+            is_sa,
+            SAKILLRES,
+            REGKILLRES,
+            &[
+                &kr.threshold.to_string(),
+                kr.target.to_json(),
+                &spd.to_json(),
+            ],
+        );
+        return res;
+    } else {
+        return String::from("");
+    }
+}
+
+fn gen_additional_action(
+    is_sa: bool,
+    o_aa: &Option<AdditionalAction>,
+    ef_count: &mut u32,
+) -> String {
+    if let Some(aa) = o_aa {
+        let res = gen_effect(
+            ef_count,
+            is_sa,
+            REGAA,
+            REGAA,
+            &[&aa.quantity.to_string(), &aa.effect],
+        );
+        return res;
+    } else {
+        return String::from("");
+    }
+}
+
+fn gen_effect(
+    ef_count: &mut u32,
+    is_sa: bool,
+    sa_templ: &str,
+    reg_templ: &str,
+    args: &[&str],
+) -> String {
+    let mut res = String::new();
+    if *ef_count > 0 {
+        res.push_str(",");
+    }
+
+    let ef;
+    if is_sa {
+        ef = template_replace(sa_templ, args);
+    } else {
+        ef = template_replace(reg_templ, args);
+    }
+
+    res.push_str(&ef);
+    *ef_count += 1;
+    return res;
+}
+
 // Skill generators
-pub fn gen_skill_effects(is_sa: bool, sk: &AdventurerSkill, dt: &DamageType, el: &Element) -> String {
+pub fn gen_skill_effects(
+    is_sa: bool,
+    sk: &AdventurerSkill,
+    dt: &DamageType,
+    el: &Element,
+) -> String {
     let mut res = String::new();
     let mut ef_count = 0;
 
-    let sa_dmg = gen_damaging(
-        is_sa,
-        &sk.dmg_effect,
-        &dt,
-        &el,
-        &Speed::None,
-        &mut ef_count,
-    );
+    let sa_dmg = gen_damaging(is_sa, &sk.dmg_effect, &dt, &el, &sk.speed, &mut ef_count);
     res.push_str(&sa_dmg);
 
     for buff in &sk.buffs {
@@ -556,6 +472,12 @@ pub fn gen_skill_effects(is_sa: bool, sk: &AdventurerSkill, dt: &DamageType, el:
 
     let ailcure = gen_ailment_cure(is_sa, sk.ailment_cure, &sk.speed, &mut ef_count);
     res.push_str(&ailcure);
+
+    let kr = gen_kill_resist(is_sa, &sk.kill_resist, &sk.speed, &mut ef_count);
+    res.push_str(&kr);
+
+    let aa = gen_additional_action(is_sa, &sk.additional_action, &mut ef_count);
+    res.push_str(&aa);
 
     res
 }

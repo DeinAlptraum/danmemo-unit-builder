@@ -144,7 +144,7 @@ pub const ASS_FOOT: &str = "
 pub const SAHEADER: &str = "
     \"skills\": {
         \"special\": {
-            \"name\": \"$0:\",
+            \"name\": \"$0\",
             \"effects\": [";
 
 // Dmg Effect
@@ -168,9 +168,9 @@ pub const SATMPBOOST: &str = "
 
 pub const SARATEBUFF: &str = "
                 {
-                    \"modifier\": \"ultra\",
+                    \"modifier\": \"$0\",
                     \"target\": \"skill\",
-                    \"attribute\": \"$0\",
+                    \"attribute\": \"$1\",
                     \"speed\": \"None\"
                 }";
 
@@ -246,6 +246,14 @@ pub const SAAILCURE: &str = "
                     \"speed\": \"None\"
                 }";
 
+pub const SAKILLRES: &str = "
+                {
+                    \"modifier\": \"only when hp >= $0%, x1\",
+                    \"target\": \"$1\",
+                    \"attribute\": \"prevent_ko\",
+                    \"speed\": \"None\"
+                }";
+
 pub const SAFOOTER: &str = "
             ]
         },";
@@ -256,7 +264,7 @@ pub const COMBATHEADER: &str = "
 
 pub const REGHEADER: &str = "
             {
-                \"name\": \"$0:\"
+                \"name\": \"$0\",
                 \"effects\": [";
 
 // Dmg Effect
@@ -280,9 +288,9 @@ pub const REGTMPBOOST: &str = "
 
 pub const REGRATEBUFF: &str = "
                     {
-                        \"modifier\": \"ultra\",
+                        \"modifier\": \"$0\",
                         \"target\": \"skill\",
-                        \"attribute\": \"$0\",
+                        \"attribute\": \"$1\",
                         \"speed\": \"None\"
                     }";
 
@@ -358,12 +366,21 @@ pub const REGAILCURE: &str = "
                         \"speed\": \"$0\"
                     }";
 
-/*pub const REGADDACT: &str = "
+pub const REGKILLRES: &str = "
                     {
-                        \"target\":\"self\",
-                        \"duration\":\"+number-of-actions\",
-                        \"attribute\":\"Additional action (if applicable, just paste full text in these braces)\"
-                    }";*/
+                        \"modifier\": \"only when hp >= $0%, x1\",
+                        \"target\": \"$1\",
+                        \"attribute\": \"prevent_ko\",
+                        \"speed\": \"$2\"
+                    }";
+
+pub const REGAA: &str = "
+                    {
+                        \"duration\": \"+$0\",
+                        \"target\": \"self\",
+                        \"attribute\": \"Additional action ($1)\",
+                        \"speed\": \"None\"
+                    }";
 
 pub const REGFOOTER: &str = "
                 ]
@@ -373,8 +390,6 @@ pub const COMBATFOOTER: &str = "
         ],";
 
 pub const DEVSKILLS: &str = "
-            }
-        ],
         \"development\": [
             {
                 \"name\": \"skill-name\",
@@ -386,7 +401,7 @@ pub const DEVSKILLS: &str = "
                 ]
             },
             {
-                \"name\": \"skill-name2 \\n\",
+                \"name\": \"skill-name2\",
                 \"effects\": [
                     {
                         \"attribute\": \"Descrption-only attribute, e.g. counter skills. Just paste the full text\"
@@ -394,7 +409,7 @@ pub const DEVSKILLS: &str = "
                 ]
             },
             {
-            \"name\": \"enemy-type Slayer \\n\",
+            \"name\": \"enemy-type Slayer\",
                 \"effects\": [
                     {
                         \"modifier\": \"+100\",

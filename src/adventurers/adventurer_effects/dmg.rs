@@ -1,14 +1,14 @@
-use super::per_effect_buff::PerEffectBuff;
-use crate::enums::{RateAttribute, SkillModifier, Target, TempBoost};
+use super::{per_effect_buff::PerEffectBuff, RateBuff};
+use crate::enums::{SkillModifier, Target, TempBoost};
 
 #[derive(PartialEq, Eq)]
 pub struct Damaging {
     pub target: Target,
     pub dmg_mod: SkillModifier,
     pub temp_boost: Option<TempBoost>,
-    pub rate_buff: Option<RateAttribute>,
+    pub rate_buff: Option<RateBuff>,
     pub lifesteal: Option<u32>,
-    pub per_effect_buffs: Vec<PerEffectBuff>,
+    pub per_effect_boost: Option<PerEffectBuff>,
 }
 
 impl Damaging {
@@ -19,7 +19,7 @@ impl Damaging {
             temp_boost: None,
             rate_buff: None,
             lifesteal: None,
-            per_effect_buffs: Vec::new(),
+            per_effect_boost: None,
         }
     }
 }

@@ -17,33 +17,11 @@ pub use assists::*;
 
 mod get_attributes;
 use crate::get_attributes::*;
-mod build_obj;
-use crate::build_obj::*;
+mod build_unit;
+use crate::build_unit::*;
 
 mod gen_json;
 pub use gen_json::*;
-
-/*
- * --- Todos ---
- * Compulsory:
- * 0. implement additional actions & kill resist
- * add "all_damage_resist_buff_removal_no_assist" to human_readable.json
- * 1. Convert Adv to JSON (don't forget Reg Skill, including json Header)
- * 2. implement Development Skills
- *
- * Would be nice:
- * don't panic on invalid input
- * change human_readable.json
- * clear console?
- *
- * --- Assumptions ---
- * Every unit uses either physical or magical attacks of one element, and all its attack skills have that damage type and element
- * A phys type/magic type unit only has phys type/magic type attacks
- * Buff/Debuff turns only for all skills, specific ones manual?
- * Ailment cure always affects [Allies] (not true, e.g. Elven Awakening Lefiya)
- * Revival skills (e.g. Forbidden Chant Fels' SA) don't exist
- * Curse removal skills (e.g. Cynic Cassandra Ilion) don't exist
-*/
 
 fn main() {
     let unit = build_unit();
@@ -55,14 +33,6 @@ fn main() {
     }
 }
 
-/*fn gen_adv_skills() {
-
-}
-
-fn gen_dev_skills() {
-
-}*/
-
 // Helper functions
 fn wri(mut file: &File, text: &str) {
     file.write(text.as_bytes()).unwrap();
@@ -71,11 +41,9 @@ fn wri(mut file: &File, text: &str) {
 fn file_name_from_unit(unit: &Unit) -> String {
     let mut file_name = String::new();
     file_name.push_str(&unit.title);
-    file_name.push(' ');
+    file_name.push_str(" - ");
     file_name.push_str(&unit.name);
     file_name.push_str(".json");
-
-    file_name = file_name.replace(" ", "_");
 
     file_name
 }

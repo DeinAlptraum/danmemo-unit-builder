@@ -17,64 +17,99 @@ pub fn get_ass_target(attr: &Attribute) -> Target {
         | Attribute::Slow
         | Attribute::Taunt
         | Attribute::Poison => Target::Foes,
-        _ => {
-            println!("Who is the effect's target? (1: Self, 2: Allies, 3: Foes)");
-            let input = read_num();
-            match input {
-                1 => Target::Auto,
-                2 => Target::Allies,
-                3 => Target::Foes,
-                _ => panic!("Please enter a number from 1 to 3"),
+        _ => get_ass_target_no_ailment(),
+    }
+}
+
+fn get_ass_target_no_ailment() -> Target {
+    println!("Who is the effect's target? (1: Self, 2: Allies, 3: Foes)");
+
+    loop {
+        let input = read_num();
+        match input {
+            1 => return Target::Auto,
+            2 => return Target::Allies,
+            3 => return Target::Foes,
+            _ => {
+                println!("Please enter a number from 1 to 3");
+                continue;
             }
         }
     }
 }
 
 pub fn get_ass_modifier(attr: &Attribute) -> i32 {
-    let ans;
     match attr {
-        Attribute::AoEResistance | Attribute::STResistance => {
-            println!(
-                "By how many percent does it increase or decrease damage? (leave out the '%' sign)"
-            );
-            ans = -1 * read_num();
-        }
-        Attribute::MPRegen => {
-            println!("How many MP does it regen per turn?");
-            ans = read_num();
-            if ans <= 0 {
-                panic!("Please enter a number greater than 0");
-            }
-        }
+        Attribute::AoEResistance | Attribute::STResistance => get_ass_modifier_aoe_st(),
+        Attribute::MPRegen => get_ass_modifier_mp_regen(),
         Attribute::Sleep
         | Attribute::Stun
         | Attribute::Seal
         | Attribute::Slow
         | Attribute::Taunt
-        | Attribute::Poison => {
-            println!("What is the chance to activate the ailment? (leave out the '%' sign)");
-            ans = read_num();
-            if ans <= 0 {
-                panic!("Please enter a number greater than 0");
-            }
-        }
+        | Attribute::Poison => get_ass_modifier_ailment(),
         Attribute::NullPhysical | Attribute::NullMagical | Attribute::NullAilment => {
-            println!("How many nulls does it add?");
-            ans = read_num();
-            if ans <= 0 {
-                panic!("Please enter a number greater than 0");
-            }
+            get_ass_modifier_null()
         }
-        Attribute::BuffTurns | Attribute::DebuffTurns => {
-            println!("By how many turns does it lengthen buffs/debuffs? (negative number for decreasing turns");
-            ans = read_num();
-        }
-        _ => {
-            println!("By how many percent does it increase/decrease the stat? (negative number for decrease. Leave out the '%' sign)");
-            ans = read_num();
-        }
+        Attribute::BuffTurns | Attribute::DebuffTurns => get_ass_modifier_buff_turns(),
+        _ => get_ass_modifier_generic(),
     }
-    ans
+}
+
+fn get_ass_modifier_aoe_st() -> i32 {
+    println!("By how many percent does it increase or decrease damage? (leave out the '%' sign)");
+    -1 * read_num()
+}
+
+fn get_ass_modifier_mp_regen() -> i32 {
+    println!("How many MP does it regen per turn?");
+
+    loop {
+        let ans = read_num();
+        if ans <= 0 {
+            println!("Please enter a number greater than 0");
+            continue;
+        }
+        return ans;
+    }
+}
+
+fn get_ass_modifier_ailment() -> i32 {
+    println!("What is the chance to activate the ailment? (leave out the '%' sign)");
+
+    loop {
+        let ans = read_num();
+        if ans <= 0 {
+            println!("Please enter a number greater than 0");
+            continue;
+        }
+        return ans;
+    }
+}
+
+fn get_ass_modifier_null() -> i32 {
+    println!("How many nulls does it add?");
+
+    loop {
+        let ans = read_num();
+        if ans <= 0 {
+            println!("Please enter a number greater than 0");
+            continue;
+        }
+        return ans;
+    }
+}
+
+fn get_ass_modifier_buff_turns() -> i32 {
+    println!(
+        "By how many turns does it lengthen buffs/debuffs? (negative number for decreasing turns"
+    );
+    read_num()
+}
+
+fn get_ass_modifier_generic() -> i32 {
+    println!("By how many percent does it increase/decrease the stat? (negative number for decrease. Leave out the '%' sign)");
+    read_num()
 }
 
 // Get assist skill effect attribute, main menu plus 7 submenus
@@ -88,17 +123,23 @@ pub fn get_ass_attribute() -> Attribute {
     println!("6: Ailments");
     println!("7: Nulls or Buff/Debuff turns");
     println!("8: Misc (Guard Rate, S.A charge etc.");
-    let ans = read_num();
-    match ans {
-        1 => return get_attr_base(),
-        2 => return get_attr_res(),
-        3 => return get_attr_aoe_st(),
-        4 => return get_attr_el(),
-        5 => return get_ass_attr_heal(),
-        6 => return get_ass_attr_ail(),
-        7 => return get_ass_attr_null_turns(),
-        8 => return get_ass_attr_misc(),
-        _ => panic!("Please enter a number from 1 to 7"),
+
+    loop {
+        let ans = read_num();
+        match ans {
+            1 => return get_attr_base(),
+            2 => return get_attr_res(),
+            3 => return get_attr_aoe_st(),
+            4 => return get_attr_el(),
+            5 => return get_ass_attr_heal(),
+            6 => return get_ass_attr_ail(),
+            7 => return get_ass_attr_null_turns(),
+            8 => return get_ass_attr_misc(),
+            _ => {
+                println!("Please enter a number from 1 to 7");
+                continue;
+            }
+        }
     }
 }
 

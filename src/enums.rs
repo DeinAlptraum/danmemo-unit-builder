@@ -27,7 +27,7 @@ impl HumanReadable for UnitType {
     }
 }
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum Target {
     Foes,
     Foe,
@@ -59,7 +59,7 @@ impl Target {
 }
 
 // Assist related enums
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum Attribute {
     // Buffs & Debuffs
     // Base Stats
@@ -135,6 +135,9 @@ pub enum Attribute {
     // (De)buff turns
     BuffTurns,
     DebuffTurns,
+
+    // Combined Attributes
+    StrengthAndMagic,
 }
 
 impl HumanReadable for Attribute {
@@ -192,6 +195,7 @@ impl HumanReadable for Attribute {
             Attribute::BuffTurns => "Status Buff",
             Attribute::DebuffTurns => "Status Debuff",
             Attribute::SACharge => "S.A Gauge Charge gain",
+            Attribute::StrengthAndMagic => "Str. and Mag.",
         }
         .to_string()
     }
@@ -252,6 +256,7 @@ impl Attribute {
             Attribute::NullAilment => "null_ailments",
             Attribute::BuffTurns => "status_buff",
             Attribute::DebuffTurns => "status_debuff",
+            Attribute::StrengthAndMagic => "strength_magic",
         }
     }
 }
@@ -367,7 +372,7 @@ impl HumanReadable for SkillModifier {
         match self {
             SkillModifier::Low => "Low",
             SkillModifier::Medium => "Mid",
-            SkillModifier::High => "High",
+            SkillModifier::High => "Hi",
             SkillModifier::Super => "Super",
             SkillModifier::Ultra => "Ultra",
         }
@@ -473,7 +478,7 @@ impl RateAttribute {
     }
 }
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum BuffType {
     Buff,
     Debuff,

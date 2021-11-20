@@ -1,39 +1,60 @@
-use crate::enums::{Attribute, Target};
+use crate::enums::{Attribute, BuffType, Target};
 use crate::HumanReadable;
 
 #[derive(PartialEq, Eq)]
 pub struct PerEffectBuff {
-    pub attribute: Attribute,
+    pub attributes: Vec<Attribute>,
     pub source: Target,
+    pub kind: BuffType,
     pub modifier: u32,
+}
+
+impl HumanReadable for PerEffectBuff {
+    fn to_str(&self) -> String {
+        let mut res = format!("Dmg.+{}% per each ", self.modifier);
+        if self.source == Target::Auto {
+            res.push_str("[Self] ");
+        } else {
+            res.push_str("Target's ");
+        }
+
+        for attr in &self.attributes {
+            res.push_str(&attr.to_str());
+            if attr != self.attributes.last().unwrap() {
+                res.push_str(", ");
+            }
+        }
+
+        if self.kind == BuffType::Buff {
+            res.push_str(" Buff Skill");
+        } else {
+            res.push_str(" Reduction Skill");
+        }
+
+        res
+    }
 }
 
 impl PerEffectBuff {
     pub fn new() -> PerEffectBuff {
         PerEffectBuff {
-            attribute: Attribute::Strength,
+            attributes: Vec::new(),
             source: Target::Auto,
+            kind: BuffType::Buff,
             modifier: 0,
         }
     }
 
-    pub fn to_str(&self) -> String {
-        let mut res = format!("Dmg.+{} per each ", self.modifier);
+    pub fn to_json(&self, attr: &Attribute) -> String {
+        let mut res = String::from("per_each_");
+
         if self.source == Target::Auto {
-            res.push_str("[Self]");
-            res.push_str(&self.attribute.to_str());
-            res.push_str("Buff Skill");
+            res.push_str("self_");
         } else {
-            res.push_str("Target's");
-            res.push_str(&self.attribute.to_str());
-            res.push_str("Reduction Skill");
+            res.push_str("targets_");
         }
 
-        res
-    }
-
-    pub fn to_json(&self) -> String {
-        let attr = match self.attribute {
+        let attr = match attr {
             // isn't always equal to the pure attribute json strings we get from Attribute.to_json()
             Attribute::Strength => "str",
             Attribute::Endurance => "end",
@@ -55,24 +76,21 @@ impl PerEffectBuff {
             Attribute::CounterRate => "counter_rate",
             Attribute::CriticalRate => "critical_rate",
             Attribute::PenetrationRate => "penetration_rate",
+            Attribute::StrengthAndMagic => "strength_and_magic",
             _ => panic!(
                 "Match in per_effect_boost was non-exhaustive.
                 This shouldn't happen, please report it to the developer."
             ),
         };
-        let mut attr = attr.to_string();
 
-        let mut res = "per_each_".to_string();
+        res.push_str(attr);
 
-        if self.source == Target::Auto {
-            res.push_str("self_");
-            attr.push_str("_buff_skill");
+        if self.kind == BuffType::Buff {
+            res.push_str("_buff_skill");
         } else {
-            res.push_str("foe_");
-            attr.push_str("_debuff_skill");
+            res.push_str("_reduction_skill");
         }
 
-        res.push_str(&attr);
         res
     }
 }

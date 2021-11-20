@@ -28,7 +28,7 @@ impl HumanReadable for Buff {
         ass_ef.modifier = self.modifier.clone();
 
         let mut res = ass_ef.to_str();
-        let dur = &format!(" /{} turn(s)", self.duration);
+        let dur = &format!("/{} turn(s)", self.duration);
         res.push_str(dur);
         res
     }

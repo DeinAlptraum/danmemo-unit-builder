@@ -7,33 +7,60 @@ use std::io::*;
 pub fn read_num() -> i32 {
     let mut input = String::new();
 
-    stdin().read_line(&mut input).expect("Error!");
-    match input.trim().parse() {
-        Ok(result) => result,
-        Err(_) => panic!("Error reading input"),
+    loop {
+        stdin().read_line(&mut input).expect("Error reading input. I have no idea why this is happening, but please tell me anyway so I can try to fix it.");
+        match input.trim().parse() {
+            Ok(result) => return result,
+            Err(_) => {
+                println!("Please enter a number");
+                continue;
+            }
+        }
     }
 }
 
 pub fn read_str() -> String {
-    let mut input = String::new();
-    stdin().read_line(&mut input).expect("Error!");
-    input.trim().to_string()
+    loop {
+        let mut input = String::new();
+        stdin().read_line(&mut input).expect("Error!");
+        if input == "" {
+            println!("Please enter something");
+            continue;
+        }
+        return input.trim().to_string();
+    }
 }
 
-pub fn read_multinum() -> Vec<i32> {
+pub fn read_multistring() -> Vec<String> {
     let mut input = String::new();
     stdin().read_line(&mut input).expect("Error!");
     input.trim().to_string();
 
     let mut res = Vec::new();
     for entry in input.split(" ") {
-        match entry.parse() {
-            Ok(x) => res.push(x),
-            Err(_) => panic!("Error reading input"),
-        }
+        res.push(entry.trim().to_string());
     }
 
     res
+}
+
+pub fn read_multinum() -> Vec<i32> {
+    'outer: loop {
+        let strs = read_multistring();
+        let mut nums = Vec::new();
+        for entry in &strs {
+            if entry != "" {
+                match entry.parse() {
+                    Ok(x) => nums.push(x),
+                    Err(_) => {
+                        println!("Please enter only numbers");
+                        continue 'outer;
+                    }
+                }
+            }
+        }
+        return nums;
+    }
 }
 
 pub fn get_numeric_option<T: HumanReadable + std::cmp::Eq + std::clone::Clone>(
@@ -46,7 +73,7 @@ pub fn get_numeric_option<T: HumanReadable + std::cmp::Eq + std::clone::Clone>(
     for op in &options {
         print!("{}: {}", counter, op.to_str());
         if op != options.last().unwrap() {
-            if counter > start && (counter - start) % 5 == 0 {
+            if (counter - start + 1) % 5 == 0 {
                 println!();
             } else {
                 print!(", ");
@@ -55,32 +82,42 @@ pub fn get_numeric_option<T: HumanReadable + std::cmp::Eq + std::clone::Clone>(
         counter += 1;
     }
     println!();
-
     stdout().flush().unwrap();
-    let ans = read_num() - (start as i32);
-    if ans < (options.len() as i32) {
-        return options[ans as usize].clone();
-    } else {
-        let end = start + (options.len() as u32) - 1;
-        panic!("Please enter a number from {} to {}", start, end);
+
+    loop {
+        let ans = read_num() - (start as i32);
+        if ans < (options.len() as i32) {
+            return options[ans as usize].clone();
+        } else {
+            let end = start + (options.len() as u32) - 1;
+            println!("Please enter a number from {} to {}", start, end);
+            continue;
+        }
     }
 }
 
 pub fn get_u32(question: &str) -> u32 {
     println!("{}", question);
-    let ans = read_num();
-    if ans <= 0 {
-        panic!("Please enter a number greater than 0");
+
+    loop {
+        let ans = read_num();
+        if ans <= 0 {
+            println!("Please enter a number greater than 0");
+            continue;
+        }
+        return ans.try_into().unwrap();
     }
-    ans.try_into().unwrap()
 }
 
 pub fn get_chance(question: &str) -> u32 {
-    let res = get_u32(question);
-    if res > 100 {
-        panic!("Please enter a number no greater than 100");
+    loop {
+        let res = get_u32(question);
+        if res > 100 {
+            println!("Please enter a number no greater than 100");
+            continue;
+        }
+        return res;
     }
-    res
 }
 
 // getters
@@ -95,57 +132,73 @@ pub fn get_unit_type() -> UnitType {
 
 pub fn get_title() -> String {
     println!(
-        "What is the unit's title? (e.g. \"Decisive Will\" in \"[Decisive Will] Bell Cranel\")"
+        "\nWhat is the unit's title? (e.g. \"Decisive Will\" in \"[Decisive Will] Bell Cranel\")"
     );
     let title = read_str();
     title
 }
 
 pub fn get_name() -> String {
-    println!("What is the unit's name? (e.g. \"Bell Cranel\" in \"[Decisive Will] Bell Cranel\")");
+    println!(
+        "\nWhat is the unit's name? (e.g. \"Bell Cranel\" in \"[Decisive Will] Bell Cranel\")"
+    );
     let name = read_str();
     name
 }
 
 pub fn get_stars() -> i32 {
-    println!("How many stars does the unit have? (1-4)");
-    let stars = read_num();
-    if stars > 4 || stars < 1 {
-        panic!("Please enter a number from 1 to 4")
+    println!("\nHow many stars does the unit have? (1-4)");
+
+    loop {
+        let stars = read_num();
+        if stars > 4 || stars < 1 {
+            println!("Please enter a number from 1 to 4");
+            continue;
+        }
+        return stars;
     }
-    stars
 }
 
 pub fn get_limited() -> bool {
-    println!("Is the unit time-limited? (n/no, y/yes)");
-    let limited = read_str();
-    match limited.as_str() {
-        "n" => false,
-        "no" => false,
-        "yes" => true,
-        "y" => true,
-        _ => panic!("Please enter 'n, 'no', 'y' or 'yes'"),
+    println!("\nIs the unit time-limited? (n/no, y/yes)");
+
+    loop {
+        let limited = read_str();
+        match limited.as_str() {
+            "n" => return false,
+            "no" => return false,
+            "yes" => return true,
+            "y" => return true,
+            _ => {
+                println!("Please enter 'n', 'no', 'y' or 'yes'");
+                continue;
+            }
+        }
     }
 }
 
 // Stats
-pub fn get_six_stats(stat: &str) -> Vec<String> {
-    let mut l: Vec<String> = Vec::new();
-    println!("How much {} does the unit have at base?", stat);
-    l.push(read_num().to_string());
-    for num in 1..5 {
-        println!("And at +{}?", num);
-        l.push(read_num().to_string());
+pub fn get_one_lb_stats(i: i32) -> Vec<i32> {
+    println!(
+        "\nPlease enter the unit's stats at +{} separated by spaces in the following order:",
+        i
+    );
+    println!("HP MP Str. End. Dex. Agi. Mag.");
+
+    loop {
+        let stats = read_multinum();
+        if stats.len() != 7 {
+            println!("Please enter exactly 7 numbers");
+            continue;
+        }
+        return stats;
     }
-    println!("And at MLB?");
-    l.push(read_num().to_string());
-    l
 }
 
 // Adventurer & Assist effect shared getters
 pub fn get_attr_base() -> Attribute {
     get_numeric_option(
-        "Which attribute does it affect?",
+        "\nWhich attribute does it affect?",
         vec![
             Attribute::Strength,
             Attribute::Magic,
@@ -159,7 +212,7 @@ pub fn get_attr_base() -> Attribute {
 
 pub fn get_attr_res() -> Attribute {
     get_numeric_option(
-        "Which resistance does it affect?",
+        "\nWhich resistance does it affect?",
         vec![
             Attribute::PhysicalResistance,
             Attribute::MagicResistance,
@@ -185,7 +238,7 @@ pub fn get_attr_res() -> Attribute {
 
 pub fn get_attr_res_no_ailment() -> Attribute {
     get_numeric_option(
-        "Which resistance does it affect?",
+        "\nWhich resistance does it affect?",
         vec![
             Attribute::PhysicalResistance,
             Attribute::MagicResistance,
@@ -204,7 +257,7 @@ pub fn get_attr_res_no_ailment() -> Attribute {
 
 pub fn get_attr_aoe_st() -> Attribute {
     get_numeric_option(
-        "What type of damage does it affect?",
+        "\nWhat type of damage does it affect?",
         vec![Attribute::AoEResistance, Attribute::STResistance],
         1,
     )
@@ -212,7 +265,7 @@ pub fn get_attr_aoe_st() -> Attribute {
 
 pub fn get_attr_el() -> Attribute {
     get_numeric_option(
-        "Which element's damage does it affect?",
+        "\nWhich element's damage does it affect?",
         vec![
             Attribute::LightDamage,
             Attribute::DarkDamage,
