@@ -36,9 +36,9 @@ pub fn get_dmg_type(at: &AdventurerType) -> DamageType {
         AdventurerType::Physical => DamageType::Physical,
         AdventurerType::Magic => DamageType::Magic,
         AdventurerType::Balance => get_numeric_option(
-            "What type of damage does the unit do?",
+            "\nWhat type of damage does the unit do?",
             vec![DamageType::Physical, DamageType::Magic],
-            0,
+            1,
         ),
     }
 }
@@ -303,7 +303,7 @@ pub fn get_buff_removal_kind() -> BuffType {
 // Buff Turns
 pub fn get_buff_turns_target() -> Target {
     get_numeric_option(
-        "\nWhose buffs/debuff turns are affected?",
+        "\nWhose buff/debuff turns are affected?",
         vec![Target::Auto, Target::Allies, Target::Foe, Target::Foes],
         1,
     )
@@ -319,7 +319,7 @@ pub fn get_buff_turns_kind() -> BuffType {
 
 pub fn get_buff_turns_number(kind: &BuffType) -> i32 {
     println!(
-        "By how many turns does it lengthen/shorten {}s? (negative number for decrease?",
+        "\nBy how many turns does it lengthen/shorten {}s? (negative number for decrease?",
         kind.to_str()
     );
 
@@ -424,12 +424,6 @@ pub fn get_kill_resist_threshold() -> u32 {
 }
 
 // Additional Actions
-pub fn get_additional_action_effect() -> String {
-    println!("\nWhat effect does the additional action have?");
-    println!("Just paste the whole text, e.g. 'Lo Fire M.Attack Foe'");
-    read_str()
-}
-
 pub fn get_additional_action_quantity() -> u32 {
     get_u32("\nHow many additional actions does the skill add?")
 }
@@ -445,7 +439,7 @@ pub fn get_ail_target() -> Target {
 
 pub fn get_ail_kind() -> Attribute {
     get_numeric_option(
-        "What ailment is applied?",
+        "\nWhat ailment is applied?",
         vec![
             Attribute::Sleep,
             Attribute::Stun,
@@ -459,5 +453,5 @@ pub fn get_ail_kind() -> Attribute {
 }
 
 pub fn get_ail_chance() -> u32 {
-    get_chance("What is the chance to apply the ailment(s)? (leave out the '%' sign)")
+    get_chance("\nWhat is the chance to apply the ailment(s)? (leave out the '%' sign)")
 }

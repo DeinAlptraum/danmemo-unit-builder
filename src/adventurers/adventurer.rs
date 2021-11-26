@@ -1,4 +1,4 @@
-use crate::enums::*;
+use crate::{enums::*, DevelopmentSkill};
 use crate::{AdventurerSkill, Unit};
 
 pub struct Adventurer {
@@ -8,6 +8,8 @@ pub struct Adventurer {
     pub element: Element,
     pub sa: AdventurerSkill,
     pub reg_skills: Vec<AdventurerSkill>,
+    pub additional_action: Option<AdventurerSkill>,
+    pub dev_skills: Vec<DevelopmentSkill>,
 }
 
 impl Adventurer {
@@ -19,6 +21,8 @@ impl Adventurer {
             element: Element::Fire,
             sa: AdventurerSkill::new(),
             reg_skills: Vec::new(),
+            additional_action: None,
+            dev_skills: Vec::new(),
         }
     }
 }

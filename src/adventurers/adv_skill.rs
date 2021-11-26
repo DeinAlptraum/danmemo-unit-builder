@@ -1,5 +1,5 @@
-use crate::adventurer_effects::{
-    AdditionalAction, Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null,
+use crate::combat_skills::{
+    Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null,
 };
 use crate::enums::Speed;
 
@@ -14,7 +14,7 @@ pub struct AdventurerSkill {
     pub nulls: Vec<Null>,
     pub hp_heal: Option<Heal>,
     pub mp_heal: Option<Heal>,
-    pub additional_action: Option<AdditionalAction>,
+    pub additional_action: Option<u32>,
     pub ailments: Vec<Ailment>,
     pub ailment_cure: bool,
     pub kill_resist: Option<KillResist>,

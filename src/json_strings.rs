@@ -162,7 +162,7 @@ pub const SATMPBOOST: &str = "
                 {
                     \"modifier\":\"$0\",
                     \"target\":\"skill\",
-                    \"attribute\": \"None\",
+                    \"attribute\": \"temp_boost\",
                     \"speed\": \"None\"
                 }";
 
@@ -233,6 +233,13 @@ pub const SAHEAL: &str = "
 
 pub const SAAIL: &str = "
                 {
+                    \"target\": \"$1\",
+                    \"attribute\": \"$2\",
+                    \"speed\": \"None\"
+                }";
+
+pub const SAAILCHANCE: &str = "
+                {
                     \"modifier\": \"$0\",
                     \"target\": \"$1\",
                     \"attribute\": \"$2\",
@@ -282,7 +289,7 @@ pub const REGTMPBOOST: &str = "
                     {
                         \"modifier\":\"$0\",
                         \"target\":\"skill\",
-                        \"attribute\": \"None\",
+                        \"attribute\": \"temp_boost\",
                         \"speed\": \"None\"
                     }";
 
@@ -353,6 +360,13 @@ pub const REGHEAL: &str = "
 
 pub const REGAIL: &str = "
                     {
+                        \"target\": \"$1\",
+                        \"attribute\": \"$2\",
+                        \"speed\": \"$3\"
+                    }";
+
+pub const REGAILCHANCE: &str = "
+                    {
                         \"modifier\": \"$0\",
                         \"target\": \"$1\",
                         \"attribute\": \"$2\",
@@ -374,11 +388,11 @@ pub const REGKILLRES: &str = "
                         \"speed\": \"$2\"
                     }";
 
-pub const REGAA: &str = "
+pub const REGAASHORT: &str = "
                     {
                         \"duration\": \"+$0\",
                         \"target\": \"self\",
-                        \"attribute\": \"Additional action ($1)\",
+                        \"attribute\": \"additional_action\",
                         \"speed\": \"None\"
                     }";
 
@@ -391,6 +405,15 @@ pub const COMBATFOOTER: &str = "
 
 pub const DEVSKILLS: &str = "
         \"development\": [
+            {
+                \"name\": \"<element> Manifestation: H\",
+                \"effects\": [
+                    {
+                        \"attribute\": \"<opposite element> Resist+35%. When countering and attacking, regular <dmg type>.Attack a Foe with <element> Element\",
+                        \"modifier\": \"\"
+                    }
+                ]
+            },
             {
                 \"name\": \"skill-name\",
                 \"effects\":[
@@ -409,10 +432,10 @@ pub const DEVSKILLS: &str = "
                 ]
             },
             {
-            \"name\": \"enemy-type Slayer\",
+            \"name\": \"enemy-type Killer\",
                 \"effects\": [
                     {
-                        \"modifier\": \"+100\",
+                        \"modifier\": \"+50\",
                         \"attribute\": \"Ability Pt. toward enemy-type\"
                     }
                 ]

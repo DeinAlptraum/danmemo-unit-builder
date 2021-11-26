@@ -1,6 +1,5 @@
-use crate::adventurer_effects::{
-    AdditionalAction, Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null,
-    PerEffectBuff, RateBuff,
+use crate::combat_skills::{
+    Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null, PerEffectBuff, RateBuff,
 };
 use crate::enums::{DamageType, Element, Speed, TempBoost, UnitType};
 use crate::{json_strings::*, Adventurer, AdventurerSkill};
@@ -335,11 +334,17 @@ fn gen_heal(is_sa: bool, o_heal: &Option<Heal>, spd: &Speed, ef_count: &mut u32)
 }
 
 fn gen_ailment(is_sa: bool, ail: &Ailment, spd: &Speed, ef_count: &mut u32) -> String {
+    let mut sa_templ = SAAIL;
+    let mut reg_templ = REGAIL;
+    if ail.chance != 100 {
+        sa_templ = SAAILCHANCE;
+        reg_templ = REGAILCHANCE;
+    }
     let res = gen_effect(
         ef_count,
         is_sa,
-        SAAIL,
-        REGAIL,
+        sa_templ,
+        reg_templ,
         &[
             &ail.chance.to_string(),
             &ail.target.to_json(),
@@ -383,19 +388,9 @@ fn gen_kill_resist(
     }
 }
 
-fn gen_additional_action(
-    is_sa: bool,
-    o_aa: &Option<AdditionalAction>,
-    ef_count: &mut u32,
-) -> String {
+fn gen_additional_action(is_sa: bool, o_aa: &Option<u32>, ef_count: &mut u32) -> String {
     if let Some(aa) = o_aa {
-        let res = gen_effect(
-            ef_count,
-            is_sa,
-            REGAA,
-            REGAA,
-            &[&aa.quantity.to_string(), &aa.effect],
-        );
+        let res = gen_effect(ef_count, is_sa, REGAASHORT, REGAASHORT, &[&aa.to_string()]);
         return res;
     } else {
         return String::from("");

@@ -135,9 +135,6 @@ pub enum Attribute {
     // (De)buff turns
     BuffTurns,
     DebuffTurns,
-
-    // Combined Attributes
-    StrengthAndMagic,
 }
 
 impl HumanReadable for Attribute {
@@ -195,7 +192,6 @@ impl HumanReadable for Attribute {
             Attribute::BuffTurns => "Status Buff",
             Attribute::DebuffTurns => "Status Debuff",
             Attribute::SACharge => "S.A Gauge Charge gain",
-            Attribute::StrengthAndMagic => "Str. and Mag.",
         }
         .to_string()
     }
@@ -256,7 +252,6 @@ impl Attribute {
             Attribute::NullAilment => "null_ailments",
             Attribute::BuffTurns => "status_buff",
             Attribute::DebuffTurns => "status_debuff",
-            Attribute::StrengthAndMagic => "strength_magic",
         }
     }
 }
@@ -439,10 +434,10 @@ impl HumanReadable for TempBoost {
 impl TempBoost {
     pub fn to_json(&self, dt: &DamageType) -> &str {
         match (self, dt) {
-            (TempBoost::Boost, DamageType::Magic) => "mag_temp",
-            (TempBoost::Boost, DamageType::Physical) => "str_temp",
-            (TempBoost::GreatBoost, DamageType::Magic) => "great_mag_temp",
-            (TempBoost::GreatBoost, DamageType::Physical) => "great_str_temp",
+            (TempBoost::Boost, DamageType::Magic) => "normal2_mag",
+            (TempBoost::Boost, DamageType::Physical) => "normal2_str",
+            (TempBoost::GreatBoost, DamageType::Magic) => "great_mag",
+            (TempBoost::GreatBoost, DamageType::Physical) => "great_str",
         }
     }
 }
@@ -471,7 +466,7 @@ impl RateAttribute {
     pub fn to_json(&self) -> &str {
         match self {
             RateAttribute::Unguard => "unguard_rate",
-            RateAttribute::Uncounter => "uncounter_rte",
+            RateAttribute::Uncounter => "uncounter_rate",
             RateAttribute::Critical => "critical_rate",
             RateAttribute::Penetration => "penetration_rate",
         }
@@ -525,4 +520,150 @@ impl HealModifier {
             HealModifier::SkillModifier(x) => x.to_json().to_string(),
         }
     }
+}
+
+#[derive(PartialEq, Eq)]
+pub enum DevelopmentSkillType {
+    Unknown,
+
+    // Elemental & Counters
+    ElementManifestation(Element, u32), // modifier resist
+    ElementResistance(Element, u32),    // modifier resist
+    WillOf(Element),                    // elemental counters
+
+    // Counters
+    Bravery(u32),  // regular attack, heal dmg, water Bravery???
+    Encouragement, // Counters Lo heal lowest Ally
+    Blessing,      // counters extend buff 1 turn
+    Flashback,     // Ultra Crit Rate Counters
+
+    // With base Stats
+    // 4 stats
+    Hex(u32),         // Mag., End., Agi. & Dex.
+    MartialArts(u32), // Str. & End. & Agi. & Dex.
+    // 3 stats
+    Tattletale(u32),     // Mag. Agi. Dex.
+    FightingSpirit(u32), // Str. Agi. Dex.
+    Rigid(u32),          // End. Agi. Dex.
+    // 2 stats
+    Forestall(u32),   // Mag. & Agi.
+    BattleArts(u32),  // Str. & Dex.
+    Concentrate(u32), // Agi. & Dex.
+    Instinct(u32),    // Agi. & Dex.
+    Climb(u32),       // End. & Agi.
+    // 1 stat
+    Crush(u32),        // Str.
+    Mage(u32),         // Mag.
+    MindsEye(u32),     // Mag.
+    Acceleration(u32), // Agi.
+    Hunter(u32),       // Agi.
+
+    // Resistances
+    Protection(u32),         // P.Resist & M.Resist
+    MagicResistance(u32),    // M.Resist
+    StatusResist(u32),       // Ailment Resist
+    AbnormalResistance(u32), // Ailment Resist
+
+    // Rate Buffs
+    Solid(u32),          // Guard Rate
+    Strike(u32),         // crit dmg.
+    PiercingStrike(u32), // pen dmg.
+    TrueStrike(u32),     // crit & pen dmg.
+    CounterAttack(u32),  // Counter-attack, Counter Damage
+
+    Bloom(u32),         // HP & MP Regen/turn
+    SpiritHealing(u32), // MP Regen/turn
+
+    // Bell's
+    LiarisFreese,
+    Luck(u32),
+
+    Killer(EnemyType),
+    /*
+     * Not included:
+     * Unbending: anni 4 water Bell, when countering -1 turn Str/Mag debuffs
+     * (Elemental) Ruin: counters reduce foe buff turns by 1
+     * (Elemental) Penetration: anni 4 fire Welf & dark Elfy, per-each elemental res debuff dmg bonus
+     * (Elemental) Anti Strength: counters remove Str. Buffs
+     * Anti Magic: analogously
+     * Dark Captor: Love Spell Chigusa, dark M. counters seal
+     * Elios Passion: Agi. Buff, all Daphne Units
+     * Five Dimension Troia: self mag null on counter, only Cassandra?
+     * Earth's Distraction: swimsuit Alicia, counters taunt
+     * Fist Strike: Str., only old units
+     * Predator: only new Zard, life steal counters debuff Str.
+     * Strike L.Sword
+     * (something) L.Sword: stat boni when equipped with L.Sword
+     * Silence: only Alfia, counters Mag Null Self, remove Foe Mag Buffs
+     * Fire Guard: only Vesta, self all elements resist buff and counters AoE heal
+     * (Elemental) Pressure: only Epimetheus & Yukina, elemental counters debuff str/mag
+     * Dragon Bearer: only Aldo, counters debuff P.Res
+     * Magical Arts: buffs Mag. & Dex., only Mariel
+     *  Hierophant: heal counters, only Mariel
+     * Abyssal Devotee: only Thillelille, ultra crit rate counters
+     */
+}
+
+impl HumanReadable for DevelopmentSkillType {
+    fn to_str(&self) -> String {
+        match self {
+            DevelopmentSkillType::ElementManifestation(el, _) => {
+                format!("{} Manifestation", el.to_str())
+            }
+            DevelopmentSkillType::ElementResistance(el, _) => format!("{} Resistance", el.to_str()),
+            /*DevelopmentSkillType::(_) => format!(""),
+            DevelopmentSkillType::(_) => format!(""),
+            DevelopmentSkillType::(_) => format!(""),
+            DevelopmentSkillType::(_) => format!(""),
+            DevelopmentSkillType::(_) => format!(""),
+            DevelopmentSkillType::(_) => format!(""),*/
+            _ => format!(""),
+        }
+    }
+}
+
+#[derive(PartialEq, Eq)]
+pub enum SkillRank {
+    I,
+    H,
+    G,
+    F,
+    E,
+    D,
+    C,
+    B,
+    A,
+}
+
+impl HumanReadable for SkillRank {
+    fn to_str(&self) -> String {
+        match self {
+            SkillRank::I => "I",
+            SkillRank::H => "H",
+            SkillRank::G => "G",
+            SkillRank::F => "F",
+            SkillRank::E => "E",
+            SkillRank::D => "D",
+            SkillRank::C => "C",
+            SkillRank::B => "B",
+            SkillRank::A => "A",
+        }
+        .to_string()
+    }
+}
+
+#[derive(PartialEq, Eq)]
+pub enum EnemyType {
+    Dragon,
+    Spirit,
+    Giant,
+    Ox,
+    Beast,
+    Ogre,
+    Insect,
+    Plant,
+    Aqua,
+    Material,
+    Worm,
+    Fantasma,
 }

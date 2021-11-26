@@ -4,10 +4,12 @@ pub use adv_skill::AdventurerSkill;
 mod adventurer;
 pub use adventurer::Adventurer;
 
-pub mod adventurer_effects;
+pub mod combat_skills;
 
 mod build_adv;
 pub use build_adv::build_adv;
 
+mod dev_skill;
+pub use dev_skill::DevelopmentSkill;
+
 mod get_adv_attributes;
-//pub use get_adv_attributes::*;

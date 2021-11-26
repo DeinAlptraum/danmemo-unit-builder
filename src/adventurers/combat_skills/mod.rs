@@ -1,6 +1,3 @@
-mod additional_action;
-pub use additional_action::AdditionalAction;
-
 mod ailment;
 pub use ailment::Ailment;
 

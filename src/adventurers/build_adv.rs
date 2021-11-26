@@ -1,10 +1,7 @@
-use super::adventurer_effects::*;
+use super::combat_skills::*;
 use super::get_adv_attributes::*;
-use crate::adventurer_effects::Buff;
-use crate::enums::HumanReadable;
-use crate::enums::{Attribute, Speed};
-use crate::get_attributes::read_multinum;
-use crate::read_str;
+use crate::enums::{Attribute, HumanReadable, Speed};
+use crate::get_attributes::{read_multinum, read_str};
 use crate::{Adventurer, AdventurerSkill, Unit};
 
 fn build_rate_buff() -> RateBuff {
@@ -20,42 +17,7 @@ fn build_per_effect_boost() -> PerEffectBuff {
     ef.source = get_per_effect_boost_source();
     ef.kind = get_per_effect_boost_kind();
     ef.modifier = get_per_effect_boost_mod();
-
-    ef = compute_per_effect_boost_combos(ef);
     ef
-}
-
-fn compute_per_effect_boost_combos(ef: PerEffectBuff) -> PerEffectBuff {
-    let mut str_present = false;
-    let mut mag_present = false;
-    for attr in &ef.attributes {
-        if attr == &Attribute::Strength || attr == &Attribute::Magic {
-            if attr == &Attribute::Strength {
-                str_present = true;
-            } else {
-                mag_present = true;
-            }
-        }
-    }
-
-    let mut combo_ef = PerEffectBuff::new();
-    if str_present && mag_present {
-        combo_ef.attributes.push(Attribute::StrengthAndMagic);
-        combo_ef.source = ef.source;
-        combo_ef.kind = ef.kind;
-        combo_ef.modifier = ef.modifier;
-
-        for attr in &ef.attributes {
-            let cp_attr = attr.clone();
-            if cp_attr != Attribute::Strength && cp_attr != Attribute::Magic {
-                combo_ef.attributes.push(cp_attr);
-            }
-        }
-
-        combo_ef
-    } else {
-        ef
-    }
 }
 
 fn build_dmg_effect() -> Damaging {
@@ -101,39 +63,6 @@ fn build_buff_removal() -> BuffRemove {
     br
 }
 
-fn compute_buff_removal_combos(efs: Vec<BuffRemove>) -> Vec<BuffRemove> {
-    let mut str_present = false;
-    let mut mag_present = false;
-    let mut found_ef = &BuffRemove::new();
-    for ef in &efs {
-        if ef.attribute == Attribute::Strength || ef.attribute == Attribute::Magic {
-            found_ef = ef.clone();
-            if ef.attribute == Attribute::Strength {
-                str_present = true;
-            } else {
-                mag_present = true;
-            }
-        }
-    }
-    if str_present && mag_present {
-        let mut combo_ef = BuffRemove::new();
-        combo_ef.attribute = Attribute::StrengthAndMagic;
-        combo_ef.target = found_ef.target;
-        combo_ef.kind = found_ef.kind;
-
-        let mut new_efs = Vec::new();
-        new_efs.push(combo_ef);
-        for ef in efs {
-            if ef.attribute != Attribute::Strength && ef.attribute != Attribute::Magic {
-                new_efs.push(ef);
-            }
-        }
-        new_efs
-    } else {
-        efs
-    }
-}
-
 fn build_buff_turns() -> BuffTurns {
     let mut bt = BuffTurns::new();
     bt.target = get_buff_turns_target();
@@ -159,11 +88,7 @@ fn build_ailment() -> Ailment {
     ail
 }
 
-fn build_effects<T: HumanReadable>(
-    skilltype: &str,
-    builder: fn() -> T,
-    combo: fn(Vec<T>) -> Vec<T>,
-) -> Vec<T> {
+fn build_effects<T: HumanReadable>(skilltype: &str, builder: fn() -> T) -> Vec<T> {
     let mut effects: Vec<T> = Vec::new();
     println!("\nLet's build the {} effects", skilltype);
     loop {
@@ -185,13 +110,7 @@ fn build_effects<T: HumanReadable>(
         }
     }
 
-    let combo_effects = combo(effects);
-
-    combo_effects
-}
-
-fn empty_combo<T: HumanReadable>(efs: Vec<T>) -> Vec<T> {
-    efs
+    effects
 }
 
 fn build_heals(mut sk: AdventurerSkill) -> AdventurerSkill {
@@ -227,14 +146,14 @@ fn build_kill_resist() -> KillResist {
     kr
 }
 
-fn build_additional_action() -> AdditionalAction {
-    let mut aa = AdditionalAction::new();
-    aa.effect = get_additional_action_effect();
-    aa.quantity = get_additional_action_quantity();
-    aa
+fn build_additional_action() -> AdventurerSkill {
+    print!("\x1B[2J\x1B[1;1H"); // clears console
+    println!("Let's build the unit's additional action");
+    let sk = build_speedless_skill(true, &mut false);
+    sk
 }
 
-fn build_speedless_skill(is_sa: bool) -> AdventurerSkill {
+fn build_speedless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     let mut sk = AdventurerSkill::new();
 
     sk.name = get_adv_skill_name();
@@ -243,13 +162,13 @@ fn build_speedless_skill(is_sa: bool) -> AdventurerSkill {
     println!("1: Damaging effect (e.g '[Foe] Hi Fire P.Attack'");
     println!("2: Buffs or Debuffs, including HP Regen skills (e.g. '[Self] +80% Str. /3 turns')");
     println!("3: Buff or Debuff Removal (e.g. '[Foes] removes Str. Buffs exc. Assist Skills')");
-    println!("4: Buff or Debuff turn effect (e.g. '[Self] M.Resist Debuff -2 turns')");
+    println!("4: Buff or Debuff turn effect (e.g. '[Self] Status Debuff-2 turns')");
     println!("5: Nulls, for attacks or ailments");
     println!("6: HP/MP Healing skills (HP regen, HP heal or MP heal");
     println!("7: Ailments (e.g. '[Foes] 35% Sleep')");
     println!("8: Ailment cure");
     println!("9: Kill resist (e.g. '[Allies] Avoids K.O x1 only when HP >= 10%)");
-    if !is_sa {
+    if !is_sa && !*has_aa {
         println!("10: Additional actions");
     }
     let ans = read_multinum();
@@ -261,23 +180,19 @@ fn build_speedless_skill(is_sa: bool) -> AdventurerSkill {
     }
     if ans.contains(&2) {
         println!();
-        sk.buffs = build_effects("Buff/Debuff", build_buff, empty_combo);
+        sk.buffs = build_effects("Buff/Debuff", build_buff);
     }
     if ans.contains(&3) {
         println!();
-        sk.buff_removals = build_effects(
-            "Buff/Debuff Removal",
-            build_buff_removal,
-            compute_buff_removal_combos,
-        );
+        sk.buff_removals = build_effects("Buff/Debuff Removal", build_buff_removal);
     }
     if ans.contains(&4) {
         println!();
-        sk.buff_turns = build_effects("Buff/Debuff turns affecting", build_buff_turns, empty_combo);
+        sk.buff_turns = build_effects("Buff/Debuff turns affecting", build_buff_turns);
     }
     if ans.contains(&5) {
         println!();
-        sk.nulls = build_effects("Null", build_null, empty_combo);
+        sk.nulls = build_effects("Null", build_null);
     }
     if ans.contains(&6) {
         println!();
@@ -285,7 +200,7 @@ fn build_speedless_skill(is_sa: bool) -> AdventurerSkill {
     }
     if ans.contains(&7) {
         println!();
-        sk.ailments = build_effects("Ailment", build_ailment, empty_combo);
+        sk.ailments = build_effects("Ailment", build_ailment);
     }
     if ans.contains(&8) {
         sk.ailment_cure = true;
@@ -295,7 +210,8 @@ fn build_speedless_skill(is_sa: bool) -> AdventurerSkill {
     }
     if ans.contains(&10) && !is_sa {
         println!();
-        sk.additional_action = Some(build_additional_action());
+        *has_aa = true;
+        sk.additional_action = Some(get_additional_action_quantity());
     }
 
     sk
@@ -304,22 +220,22 @@ fn build_speedless_skill(is_sa: bool) -> AdventurerSkill {
 fn build_sa() -> AdventurerSkill {
     print!("\x1B[2J\x1B[1;1H"); // clears console
     println!("Let's build the unit's SA");
-    let sk = build_speedless_skill(true);
+    let sk = build_speedless_skill(true, &mut false);
     sk
 }
 
-fn build_adv_skill() -> AdventurerSkill {
-    let mut sk = build_speedless_skill(false);
+fn build_adv_skill(has_aa: &mut bool) -> AdventurerSkill {
+    let mut sk = build_speedless_skill(false, has_aa);
     sk.speed = get_skill_speed();
     sk
 }
 
-fn build_adv_skills() -> Vec<AdventurerSkill> {
+fn build_adv_skills(has_aa: &mut bool) -> Vec<AdventurerSkill> {
     let mut skills = Vec::new();
     for i in 1..4 {
         print!("\x1B[2J\x1B[1;1H"); // clears console
         println!("Let's build the {}. regular skill", i);
-        skills.push(build_adv_skill());
+        skills.push(build_adv_skill(has_aa));
     }
     skills
 }
@@ -330,6 +246,11 @@ pub fn build_adv(unit: Unit) -> Adventurer {
     adv.damage_type = get_dmg_type(&adv.adventurer_type);
     adv.element = get_element();
     adv.sa = build_sa();
-    adv.reg_skills = build_adv_skills();
+
+    let mut has_aa = false;
+    adv.reg_skills = build_adv_skills(&mut has_aa);
+    if has_aa {
+        adv.additional_action = Some(build_additional_action());
+    }
     adv
 }

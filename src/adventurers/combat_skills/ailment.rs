@@ -22,8 +22,8 @@ impl HumanReadable for Ailment {
         format!(
             "[{}] {}% {}",
             self.target.to_str(),
+            self.chance,
             self.kind.to_str(),
-            self.chance
         )
     }
 }

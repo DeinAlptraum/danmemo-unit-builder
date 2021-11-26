@@ -27,7 +27,7 @@ impl HumanReadable for BuffTurns {
         }
 
         format!(
-            "[{}] {}{} turns",
+            "[{}] Status {}{} turns",
             self.target.to_str(),
             self.kind.to_str(),
             num_str

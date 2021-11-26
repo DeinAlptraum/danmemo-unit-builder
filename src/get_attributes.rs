@@ -1,7 +1,7 @@
 use crate::enums::*;
 use crate::HumanReadable;
 use std::convert::TryInto;
-use std::io::*;
+use std::io::{stdin, stdout, Write};
 
 // Helper functions
 pub fn read_num() -> i32 {
@@ -140,7 +140,7 @@ pub fn get_title() -> String {
 
 pub fn get_name() -> String {
     println!(
-        "\nWhat is the unit's name? (e.g. \"Bell Cranel\" in \"[Decisive Will] Bell Cranel\")"
+        "\nWhat is the character's name? (e.g. \"Bell Cranel\" in \"[Decisive Will] Bell Cranel\")"
     );
     let name = read_str();
     name
