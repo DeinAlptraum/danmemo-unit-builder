@@ -403,6 +403,17 @@ pub const REGFOOTER: &str = "
 pub const COMBATFOOTER: &str = "
         ],";
 
+pub const AAHEADER: &str = "
+        \"additionals\": [
+            {
+                \"name\": \"\",
+                \"effects\": [";
+
+pub const AAFOOTER: &str = "
+                ]
+            }
+        ],";
+
 pub const DEVSKILLS: &str = "
         \"development\": [
             {

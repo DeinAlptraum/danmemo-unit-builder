@@ -506,6 +506,19 @@ pub fn gen_adv_skills(adv: &Adventurer) -> String {
     res
 }
 
+pub fn gen_aa(adv: &Adventurer) -> String {
+    if let Some(aa) = &adv.additional_action {
+        let mut res = template_replace(AAHEADER, &[&adv.sa.name]);
+        let efs = gen_skill_effects(false, &aa, &adv.damage_type, &adv.element);
+        res.push_str(&efs);
+        res.push_str(AAFOOTER);
+        return res
+    }
+    else {
+        return String::from("")
+    }
+}
+
 pub fn gen_dev_skills(adv: &Adventurer) -> String {
     DEVSKILLS.to_string()
 }
