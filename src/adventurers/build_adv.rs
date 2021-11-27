@@ -146,17 +146,8 @@ fn build_kill_resist() -> KillResist {
     kr
 }
 
-fn build_additional_action() -> AdventurerSkill {
-    print!("\x1B[2J\x1B[1;1H"); // clears console
-    println!("Let's build the unit's additional action");
-    let sk = build_speedless_skill(true, &mut false);
-    sk
-}
-
-fn build_speedless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
+fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     let mut sk = AdventurerSkill::new();
-
-    sk.name = get_adv_skill_name();
 
     println!("\nWhich of the following effects does the skill have? (enter applicable separated by spaces, e.g. '2 4 5'");
     println!("1: Damaging effect (e.g '[Foe] Hi Fire P.Attack'");
@@ -217,6 +208,14 @@ fn build_speedless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     sk
 }
 
+fn build_speedless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
+    let name = get_adv_skill_name();
+    let mut sk = build_nameless_skill(is_sa, has_aa);
+    sk.name = name;
+
+    sk
+}
+
 fn build_sa() -> AdventurerSkill {
     print!("\x1B[2J\x1B[1;1H"); // clears console
     println!("Let's build the unit's SA");
@@ -238,6 +237,13 @@ fn build_adv_skills(has_aa: &mut bool) -> Vec<AdventurerSkill> {
         skills.push(build_adv_skill(has_aa));
     }
     skills
+}
+
+fn build_additional_action() -> AdventurerSkill {
+    print!("\x1B[2J\x1B[1;1H"); // clears console
+    println!("Let's build the unit's additional action");
+    let sk = build_nameless_skill(true, &mut false);
+    sk
 }
 
 pub fn build_adv(unit: Unit) -> Adventurer {

@@ -23,7 +23,7 @@ pub struct AdventurerSkill {
 impl AdventurerSkill {
     pub fn new() -> AdventurerSkill {
         AdventurerSkill {
-            name: String::new(),
+            name: String::from(""),
             speed: Speed::None,
             dmg_effect: None,
             buffs: Vec::new(),

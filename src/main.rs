@@ -82,6 +82,9 @@ pub fn write_adv(unit: Unit) {
     let skills = gen_adv_skills(&adv);
     wri(&file, &skills);
 
+    let aa = gen_aa(&adv);
+    wri(&file, &aa);
+
     let dev_skills = gen_dev_skills(&adv);
     wri(&file, &dev_skills);
 }
