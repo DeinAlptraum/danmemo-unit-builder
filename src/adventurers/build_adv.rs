@@ -155,7 +155,7 @@ fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     println!("3: Buff or Debuff Removal (e.g. '[Foes] removes Str. Buffs exc. Assist Skills')");
     println!("4: Buff or Debuff turn effect (e.g. '[Self] Status Debuff-2 turns')");
     println!("5: Nulls, for attacks or ailments");
-    println!("6: HP/MP Healing skills (HP regen, HP heal or MP heal");
+    println!("6: HP/MP Healing skills (HP heal or MP heal, NOT HP Regen!)");
     println!("7: Ailments (e.g. '[Foes] 35% Sleep')");
     println!("8: Ailment cure");
     println!("9: Kill resist (e.g. '[Allies] Avoids K.O x1 only when HP >= 10%)");

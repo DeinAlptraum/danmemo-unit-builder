@@ -365,7 +365,7 @@ pub enum SkillModifier {
 impl HumanReadable for SkillModifier {
     fn to_str(&self) -> String {
         match self {
-            SkillModifier::Low => "Low",
+            SkillModifier::Low => "Lo",
             SkillModifier::Medium => "Mid",
             SkillModifier::High => "Hi",
             SkillModifier::Super => "Super",

@@ -230,7 +230,7 @@ fn get_adv_attr_rate() -> Attribute {
 
 pub fn get_buff_mod(attr: &Attribute) -> i32 {
     match attr {
-        Attribute::HPRegen => println!("How many percent does it heal? (leave out the '%' sign)"),
+        Attribute::HPRegen => println!("\nHow many percent does it heal? (leave out the '%' sign)"),
         _ => println!("\nBy how many percent does it increase/decrease the stat? (negative number for decrease. Leave out the '%' sign)")
     }
     let ans = read_num();

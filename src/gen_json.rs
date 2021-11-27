@@ -1,7 +1,7 @@
 use crate::combat_skills::{
     Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null, PerEffectBuff, RateBuff,
 };
-use crate::enums::{DamageType, Element, Speed, TempBoost, UnitType};
+use crate::enums::{Attribute, DamageType, Element, Speed, TempBoost, UnitType};
 use crate::{json_strings::*, Adventurer, AdventurerSkill};
 use crate::{Assist, AssistEffect, Unit};
 use regex::{Captures, Regex};
@@ -254,6 +254,10 @@ fn mod_to_json(modi: i32) -> String {
 }
 
 fn gen_buff(is_sa: bool, buff: &Buff, spd: &Speed, ef_count: &mut u32) -> String {
+    let modi = match buff.attribute {
+        Attribute::HPRegen => buff.modifier.to_string(),
+        _ => mod_to_json(buff.modifier),
+    };
     let res = gen_effect(
         ef_count,
         is_sa,
@@ -261,7 +265,7 @@ fn gen_buff(is_sa: bool, buff: &Buff, spd: &Speed, ef_count: &mut u32) -> String
         REGBUFF,
         &[
             &buff.duration.to_string(),
-            &mod_to_json(buff.modifier),
+            &modi,
             &buff.target.to_json(),
             &buff.attribute.to_json(),
             &spd.to_json(),
@@ -513,8 +517,7 @@ pub fn gen_aa(adv: &Adventurer) -> String {
         res.push_str(&efs);
         res.push_str(AAFOOTER);
         return res
-    }
-    else {
+    } else {
         return String::from("")
     }
 }
