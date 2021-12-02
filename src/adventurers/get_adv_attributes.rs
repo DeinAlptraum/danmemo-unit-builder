@@ -117,7 +117,7 @@ pub fn get_lifesteal() -> u32 {
 
 // Per Skill Effect Damage Boosts
 pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
-    println!("\nOn which attributes does the damage buff depend? (enter applicable separated by spaces, e.g. '2 3 12'");
+    println!("\nOn which attributes does the damage buff depend? (enter applicable separated by spaces, e.g. '2 3 12')");
     println!("1: Strength, 2: Magic, 3: Agility, 4: Dexterity, 5: Endurance");
     println!("6: P.Resist, 7: M.Resist, 8: Dmg. received (Attack Type: All Targets), 9: Dmg. received (Attack Type: Single Target)");
     println!("10: Light Dmg., 11: Dark Dmg., 12: Fire Dmg., 13: Water Dmg.");
@@ -319,7 +319,7 @@ pub fn get_buff_turns_kind() -> BuffType {
 
 pub fn get_buff_turns_number(kind: &BuffType) -> i32 {
     println!(
-        "\nBy how many turns does it lengthen/shorten {}s? (negative number for decrease?",
+        "\nBy how many turns does it lengthen/shorten {}s? (negative number for decrease)",
         kind.to_str()
     );
 
@@ -344,7 +344,7 @@ pub fn get_null_target() -> Target {
 
 pub fn get_null_kind() -> Attribute {
     get_numeric_option(
-        "What type of nulls does it apply?",
+        "\nWhat type of nulls does it apply?",
         vec![
             Attribute::NullPhysical,
             Attribute::NullMagical,
@@ -355,12 +355,12 @@ pub fn get_null_kind() -> Attribute {
 }
 
 pub fn get_null_amount() -> u32 {
-    get_u32("How many nulls does it apply?")
+    get_u32("\nHow many nulls does it apply?")
 }
 
 pub fn get_null_chance() -> u32 {
     get_chance(
-        "What is the chance to apply the null(s)? (100 if guaranteed, leave out the '%' sign)",
+        "\nWhat is the chance to apply the null(s)? (100 if guaranteed, leave out the '%' sign)",
     )
 }
 
@@ -454,4 +454,9 @@ pub fn get_ail_kind() -> Attribute {
 
 pub fn get_ail_chance() -> u32 {
     get_chance("\nWhat is the chance to apply the ailment(s)? (leave out the '%' sign)")
+}
+
+// Development Skills
+pub fn get_dev_modifier() -> u32 {
+    get_u32("\nWhat is the development skill's percentage-based modifier? (leave out the '%' sign)")
 }

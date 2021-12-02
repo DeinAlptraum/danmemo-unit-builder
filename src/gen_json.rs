@@ -1,9 +1,11 @@
 use crate::combat_skills::{
     Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null, PerEffectBuff, RateBuff,
 };
-use crate::enums::{Attribute, DamageType, Element, Speed, TempBoost, UnitType};
-use crate::{json_strings::*, Adventurer, AdventurerSkill};
-use crate::{Assist, AssistEffect, Unit};
+use crate::enums::{
+    Attribute, DamageType, Element, EnemyType, HumanReadable, Speed, TempBoost, UnitType,
+};
+use crate::{json_strings::*, DevelopmentSkill};
+use crate::{Adventurer, AdventurerSkill, Assist, AssistEffect, Unit};
 use regex::{Captures, Regex};
 
 // --- Copied from Stack Overflow
@@ -516,12 +518,81 @@ pub fn gen_aa(adv: &Adventurer) -> String {
         let efs = gen_skill_effects(false, &aa, &adv.damage_type, &adv.element);
         res.push_str(&efs);
         res.push_str(AAFOOTER);
-        return res
+        return res;
     } else {
-        return String::from("")
+        return String::from("");
     }
 }
 
+// Development skills
+pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
+    let mut res = template_replace(DSHEADER, &[&ds.to_str()]);
+
+    use crate::enums::DevelopmentSkillType::*;
+    let desc = &ds.effect.get_description();
+    let modi = match &ds.effect {
+        Manifestation(_, _, _)
+        | WillOf(_, _)
+        | Bravery(_)
+        | Encouragement
+        | Blessing
+        | Flashback
+        | Bloom(_)
+        | SpiritHealing(_)
+        | LiarisFreese
+        | Unknown => String::from(""),
+        Resistance(_, modi)
+        | Hex(modi)
+        | MartialArts(modi)
+        | Tattletale(modi)
+        | FightingSpirit(modi)
+        | Rigid(modi)
+        | Forestall(modi)
+        | BattleArts(modi)
+        | Concentrate(modi)
+        | Instinct(modi)
+        | Climb(modi)
+        | Crush(modi)
+        | Mage(modi)
+        | MindsEye(modi)
+        | Acceleration(modi)
+        | Hunter(modi)
+        | Protection(modi)
+        | MagicResistance(modi)
+        | StatusResist(modi)
+        | AbnormalResistance(modi)
+        | Solid(modi)
+        | Strike(modi)
+        | PiercingStrike(modi)
+        | TrueStrike(modi)
+        | CounterAttack(modi)
+        | Luck(modi) => format!("+{}", modi),
+        Killer(et) => {
+            if et == &EnemyType::Ox {
+                String::from("+100")
+            } else {
+                String::from("+50")
+            }
+        }
+    };
+
+    let ef = template_replace(DSEFFECT, &[desc, &modi]);
+    res.push_str(&ef);
+    res.push_str(DSFOOTER);
+    res
+}
+
 pub fn gen_dev_skills(adv: &Adventurer) -> String {
-    DEVSKILLS.to_string()
+    let mut res = DEVHEADER.to_string();
+
+    for ds in &adv.dev_skills {
+        let ef_str = gen_dev_skill(ds);
+        res.push_str(&ef_str);
+        if ds != adv.dev_skills.last().unwrap() {
+            res.push_str(",");
+        }
+    }
+
+    res.push_str(DEVFOOTER);
+    res
 }

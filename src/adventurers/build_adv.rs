@@ -1,9 +1,11 @@
 use super::combat_skills::*;
 use super::get_adv_attributes::*;
-use crate::enums::{Attribute, HumanReadable, Speed};
+use crate::enums::{Attribute, DevelopmentSkillType, HumanReadable, SkillRank, Speed};
 use crate::get_attributes::{read_multinum, read_str};
+use crate::DevelopmentSkill;
 use crate::{Adventurer, AdventurerSkill, Unit};
 
+// Damaging
 fn build_rate_buff() -> RateBuff {
     let mut ef = RateBuff::new();
     ef.attribute = get_rate_buff_attr();
@@ -23,8 +25,8 @@ fn build_per_effect_boost() -> PerEffectBuff {
 fn build_dmg_effect() -> Damaging {
     println!("\nWhich of the following effects does the attack have? (enter applicable separated by spaces, e.g. '2 4'");
     println!("1: Temporary boost (e.g 'temp. Str. Boost'");
-    println!("2: Rate buffs (e.g. 'Ultra Unguard Rate')");
-    println!("3: Per effect boosts (e.g. '+40% per each [Self] Dex. Buff Skill')");
+    println!("2: Per effect boosts (e.g. '+40% per each [Self] Dex. Buff Skill')");
+    println!("3: Rate buffs (e.g. 'Ultra Unguard Rate')");
     println!("4: Life Steal");
     let ans = read_multinum();
 
@@ -35,10 +37,10 @@ fn build_dmg_effect() -> Damaging {
         dmg_ef.temp_boost = Some(get_temp_boost());
     }
     if ans.contains(&2) {
-        dmg_ef.rate_buff = Some(build_rate_buff());
+        dmg_ef.per_effect_boost = Some(build_per_effect_boost());
     }
     if ans.contains(&3) {
-        dmg_ef.per_effect_boost = Some(build_per_effect_boost());
+        dmg_ef.rate_buff = Some(build_rate_buff());
     }
     if ans.contains(&4) {
         dmg_ef.lifesteal = Some(get_lifesteal());
@@ -46,6 +48,7 @@ fn build_dmg_effect() -> Damaging {
     dmg_ef
 }
 
+// Non-damaging
 fn build_buff() -> Buff {
     let mut bf = Buff::new();
     bf.target = get_buff_target();
@@ -146,6 +149,7 @@ fn build_kill_resist() -> KillResist {
     kr
 }
 
+// Combat Skill building
 fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     let mut sk = AdventurerSkill::new();
 
@@ -246,6 +250,91 @@ fn build_additional_action() -> AdventurerSkill {
     sk
 }
 
+// Development skills
+fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
+    let mut dev = DevelopmentSkill::new();
+    println!("Please enter the full name of the development skill (e.g. 'Light Manifestation: H')");
+    let ans = read_str();
+    let dev_type = DevelopmentSkillType::str_to_type(&ans);
+    if ans.contains(":") {
+        let rk = ans.split(":").nth(1).unwrap().trim();
+        dev.rank = SkillRank::str_to_type(rk);
+    }
+
+    use DevelopmentSkillType::*;
+    dev.effect = match dev_type {
+        // Unrecognized development skill
+        Unknown => Unknown,
+        // No parameters
+        Encouragement | Blessing | Flashback | LiarisFreese => dev_type,
+        // Only one u32
+        Bravery(_) => Bravery(get_dev_modifier()),
+        Hex(_) => Hex(get_dev_modifier()),
+        MartialArts(_) => MartialArts(get_dev_modifier()),
+        Tattletale(_) => Tattletale(get_dev_modifier()),
+        FightingSpirit(_) => FightingSpirit(get_dev_modifier()),
+        Rigid(_) => Rigid(get_dev_modifier()),
+        Forestall(_) => Forestall(get_dev_modifier()),
+        BattleArts(_) => BattleArts(get_dev_modifier()),
+        Concentrate(_) => Instinct(get_dev_modifier()),
+        Instinct(_) => Instinct(get_dev_modifier()),
+        Climb(_) => Climb(get_dev_modifier()),
+        Crush(_) => Crush(get_dev_modifier()),
+        Mage(_) => Mage(get_dev_modifier()),
+        MindsEye(_) => MindsEye(get_dev_modifier()),
+        Acceleration(_) => Acceleration(get_dev_modifier()),
+        Hunter(_) => Hunter(get_dev_modifier()),
+        Protection(_) => Protection(get_dev_modifier()),
+        MagicResistance(_) => MagicResistance(get_dev_modifier()),
+        StatusResist(_) => StatusResist(get_dev_modifier()),
+        AbnormalResistance(_) => AbnormalResistance(get_dev_modifier()),
+        Solid(_) => Solid(get_dev_modifier()),
+        Strike(_) => Strike(get_dev_modifier()),
+        PiercingStrike(_) => PiercingStrike(get_dev_modifier()),
+        TrueStrike(_) => TrueStrike(get_dev_modifier()),
+        CounterAttack(_) => CounterAttack(get_dev_modifier()),
+        Bloom(_) => Bloom(get_dev_modifier()),
+        SpiritHealing(_) => SpiritHealing(get_dev_modifier()),
+        Luck(_) => Luck(get_dev_modifier()),
+        // Others
+        Killer(x) => Killer(x),
+        WillOf(_, _) => WillOf(adv.element.clone(), adv.damage_type.clone()),
+        Manifestation(_, _, _) => Manifestation(
+            adv.element.clone(),
+            adv.damage_type.clone(),
+            get_dev_modifier(),
+        ),
+        Resistance(_, _) => Resistance(adv.element.effective_against(), get_dev_modifier()),
+    };
+
+    if dev.effect == Unknown {
+        println!("Name no recognized. A suitable section in the JSON will be created, but you will have to fill it out yourself.")
+    }
+
+    dev
+}
+
+fn build_dev_skills(adv: &Adventurer) -> Vec<DevelopmentSkill> {
+    print!("\x1B[2J\x1B[1;1H"); // clears console
+    let mut devs = Vec::new();
+    println!("Let's build the development skills");
+    loop {
+        devs.push(build_dev_skill(&adv));
+
+        println!("\n\nThe unit currently has the following development skills:");
+        for dev in &devs {
+            println!("{}", dev.to_str());
+        }
+        println!("Does the unit have another development skill? n/no: no, anything else: yes");
+        let ans = read_str();
+        if ans == "n" || ans == "no" {
+            break;
+        }
+    }
+    devs
+}
+
+// Combination
 pub fn build_adv(unit: Unit) -> Adventurer {
     let mut adv = Adventurer::new(unit);
     adv.adventurer_type = get_adventurer_type();
@@ -258,5 +347,8 @@ pub fn build_adv(unit: Unit) -> Adventurer {
     if has_aa {
         adv.additional_action = Some(build_additional_action());
     }
+
+    adv.dev_skills = build_dev_skills(&adv);
+
     adv
 }

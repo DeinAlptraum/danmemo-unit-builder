@@ -414,7 +414,30 @@ pub const AAFOOTER: &str = "
             }
         ],";
 
-pub const DEVSKILLS: &str = "
+pub const DEVHEADER: &str = "
+        \"development\": [";
+
+pub const DSHEADER: &str = "
+            {
+                \"name\": \"$0\",
+                \"effects\": [
+                    {";
+
+pub const DSEFFECT: &str = "
+                        \"attribute\": \"$0\",
+                        \"modifier\": \"$1\"";
+
+pub const DSFOOTER: &str = "
+                    }
+                ]
+            }";
+
+pub const DEVFOOTER: &str = "
+        ]
+    }
+}";
+
+/*pub const DEVSKILLS: &str = "
         \"development\": [
             {
                 \"name\": \"<element> Manifestation: H\",
@@ -453,4 +476,4 @@ pub const DEVSKILLS: &str = "
             }
         ]
     }
-}";
+}";*/

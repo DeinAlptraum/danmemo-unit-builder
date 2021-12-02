@@ -298,6 +298,33 @@ impl Element {
             Element::Wind => "wind",
         }
     }
+
+    fn str_to_type(inp: &str) -> Option<Element> {
+        let inp = inp.trim().to_lowercase();
+        match inp.as_str() {
+            "light" => Some(Element::Light),
+            "dark" => Some(Element::Dark),
+            "fire" => Some(Element::Fire),
+            "water" => Some(Element::Water),
+            "thunder" => Some(Element::Thunder),
+            "earth" => Some(Element::Earth),
+            "wind" => Some(Element::Wind),
+            _ => None,
+        }
+    }
+
+    pub fn effective_against(&self) -> Element {
+        match self {
+            Element::None => Element::None,
+            Element::Light => Element::Dark,
+            Element::Dark => Element::Light,
+            Element::Fire => Element::Wind,
+            Element::Water => Element::Fire,
+            Element::Thunder => Element::Water,
+            Element::Earth => Element::Thunder,
+            Element::Wind => Element::Earth,
+        }
+    }
 }
 
 #[derive(PartialEq, Eq, Clone)]
@@ -350,6 +377,14 @@ impl DamageType {
             DamageType::Physical => "physical_attack",
             DamageType::Magic => "magic_attack",
         }
+    }
+
+    pub fn to_short_str(&self) -> String {
+        match self {
+            DamageType::Physical => "P.",
+            DamageType::Magic => "M.",
+        }
+        .to_string()
     }
 }
 
@@ -527,9 +562,9 @@ pub enum DevelopmentSkillType {
     Unknown,
 
     // Elemental & Counters
-    ElementManifestation(Element, u32), // modifier resist
-    ElementResistance(Element, u32),    // modifier resist
-    WillOf(Element),                    // elemental counters
+    Manifestation(Element, DamageType, u32), // modifier resist
+    WillOf(Element, DamageType),             // elemental counters
+    Resistance(Element, u32),                // modifier resist
 
     // Counters
     Bravery(u32),  // regular attack, heal dmg, water Bravery???
@@ -607,23 +642,207 @@ pub enum DevelopmentSkillType {
 impl HumanReadable for DevelopmentSkillType {
     fn to_str(&self) -> String {
         match self {
-            DevelopmentSkillType::ElementManifestation(el, _) => {
+            DevelopmentSkillType::Manifestation(el, _, _) => {
                 format!("{} Manifestation", el.to_str())
             }
-            DevelopmentSkillType::ElementResistance(el, _) => format!("{} Resistance", el.to_str()),
-            /*DevelopmentSkillType::(_) => format!(""),
-            DevelopmentSkillType::(_) => format!(""),
-            DevelopmentSkillType::(_) => format!(""),
-            DevelopmentSkillType::(_) => format!(""),
-            DevelopmentSkillType::(_) => format!(""),
-            DevelopmentSkillType::(_) => format!(""),*/
-            _ => format!(""),
+            DevelopmentSkillType::Resistance(el, _) => format!("{} Resistance", el.to_str()),
+            DevelopmentSkillType::WillOf(el, _) => format!("Will of {}", el.to_str()),
+            DevelopmentSkillType::Bravery(_) => String::from("Bravery"),
+            DevelopmentSkillType::Encouragement => String::from("Encouragement"),
+            DevelopmentSkillType::Blessing => String::from("Blessing"),
+            DevelopmentSkillType::Flashback => String::from("Flashback"),
+            DevelopmentSkillType::Hex(_) => String::from("Hex"),
+            DevelopmentSkillType::MartialArts(_) => String::from("Martial Arts"),
+            DevelopmentSkillType::Tattletale(_) => String::from("Tattletale"),
+            DevelopmentSkillType::FightingSpirit(_) => String::from("Fighting Spirit"),
+            DevelopmentSkillType::Rigid(_) => String::from("Rigid"),
+            DevelopmentSkillType::Forestall(_) => String::from("Forestall"),
+            DevelopmentSkillType::BattleArts(_) => String::from("Battle Arts"),
+            DevelopmentSkillType::Concentrate(_) => String::from("Concentrate"),
+            DevelopmentSkillType::Instinct(_) => String::from("Instinct"),
+            DevelopmentSkillType::Climb(_) => String::from("Climb"),
+            DevelopmentSkillType::Crush(_) => String::from("Crush"),
+            DevelopmentSkillType::Mage(_) => String::from("Mage"),
+            DevelopmentSkillType::MindsEye(_) => String::from("Mind's Eye"),
+            DevelopmentSkillType::Acceleration(_) => String::from("Acceleration"),
+            DevelopmentSkillType::Hunter(_) => String::from("Hunter"),
+            DevelopmentSkillType::Protection(_) => String::from("Protection"),
+            DevelopmentSkillType::MagicResistance(_) => String::from("Magic Resistance"),
+            DevelopmentSkillType::StatusResist(_) => String::from("Status Resist"),
+            DevelopmentSkillType::AbnormalResistance(_) => String::from("Abnormal Resistance"),
+            DevelopmentSkillType::Solid(_) => String::from("Solid"),
+            DevelopmentSkillType::Strike(_) => String::from("Strike"),
+            DevelopmentSkillType::PiercingStrike(_) => String::from("Piercing Strike"),
+            DevelopmentSkillType::TrueStrike(_) => String::from("True Strike"),
+            DevelopmentSkillType::CounterAttack(_) => String::from("Counter-attack"),
+            DevelopmentSkillType::Bloom(_) => String::from("Bloom"),
+            DevelopmentSkillType::SpiritHealing(_) => String::from("Spirit Healing"),
+            DevelopmentSkillType::LiarisFreese => String::from("Liaris Freese"),
+            DevelopmentSkillType::Luck(_) => String::from("Luck"),
+            DevelopmentSkillType::Killer(x) => {
+                if x == &EnemyType::Ox {
+                    format!("{} Slayer", x.to_str())
+                } else {
+                    format!("{} Killer", x.to_str())
+                }
+            }
+            DevelopmentSkillType::Unknown => String::from("Unknown, please fill in"),
+        }
+    }
+}
+
+impl DevelopmentSkillType {
+    pub fn str_to_type(inp: &str) -> DevelopmentSkillType {
+        let mut inp = inp.trim().to_lowercase();
+        if inp.contains(":") {
+            inp = inp.split(":").nth(0).unwrap().trim().to_string();
+        }
+
+        // Check if it is a killer / slayer skill
+        if inp.contains("killer") || inp.contains("slayer") {
+            let o_et = inp.split(" ").nth(0);
+            if let Some(mut et_str) = o_et {
+                et_str = et_str.trim();
+                if let Some(et) = EnemyType::str_to_type(et_str) {
+                    let st = inp.split(" ").nth(1).unwrap().trim();
+                    if (st == "killer" && et != EnemyType::Ox)
+                        || (st == "slayer" && et == EnemyType::Ox)
+                    {
+                        return DevelopmentSkillType::Killer(et);
+                    }
+                }
+            }
+        }
+        // check if it is a skill whose name starts with an element
+        if inp.contains("manifestation") || inp.contains("resistance") {
+            let o_et = inp.split(" ").nth(0);
+            if let Some(mut el_str) = o_et {
+                el_str = el_str.trim();
+                if let Some(el) = Element::str_to_type(el_str) {
+                    let o_st = inp.split(" ").nth(1);
+                    if let Some(mut st) = o_st {
+                        st = st.trim();
+                        if st == "manifestation" {
+                            return DevelopmentSkillType::Manifestation(
+                                el,
+                                DamageType::Physical,
+                                0,
+                            );
+                        } else if st == "resistance" {
+                            return DevelopmentSkillType::Resistance(el, 0);
+                        }
+                    }
+                }
+            }
+        }
+        // Will Of Element??
+        if inp.contains("will of") {
+            let o_et = inp.split(" ").nth(2);
+            if let Some(mut et_str) = o_et {
+                et_str = et_str.trim();
+                if let Some(et) = Element::str_to_type(et_str) {
+                    let first = inp.split(" ").nth(0).unwrap().trim();
+                    let second = inp.split(" ").nth(1).unwrap().trim();
+                    if first == "will" && second == "of" {
+                        return DevelopmentSkillType::WillOf(et, DamageType::Physical);
+                    }
+                }
+            }
+        }
+
+        let ty = match inp.as_str() {
+            "bravery" => DevelopmentSkillType::Bravery(0),
+            "encouragement" => DevelopmentSkillType::Encouragement,
+            "blessing" => DevelopmentSkillType::Blessing,
+            "flashback" => DevelopmentSkillType::Flashback,
+            "hex" => DevelopmentSkillType::Hex(0),
+            "martial arts" => DevelopmentSkillType::MartialArts(0),
+            "tattletale" => DevelopmentSkillType::Tattletale(0),
+            "fighting spirit" => DevelopmentSkillType::FightingSpirit(0),
+            "rigid" => DevelopmentSkillType::Rigid(0),
+            "forestall" => DevelopmentSkillType::Forestall(0),
+            "battle arts" => DevelopmentSkillType::BattleArts(0),
+            "concentrate" => DevelopmentSkillType::Concentrate(0),
+            "instinct" => DevelopmentSkillType::Instinct(0),
+            "climb" => DevelopmentSkillType::Climb(0),
+            "crush" => DevelopmentSkillType::Crush(0),
+            "mage" => DevelopmentSkillType::Mage(0),
+            "mind's eye" => DevelopmentSkillType::MindsEye(0),
+            "minds eye" => DevelopmentSkillType::MindsEye(0),
+            "acceleration" => DevelopmentSkillType::Acceleration(0),
+            "hunter" => DevelopmentSkillType::Hunter(0),
+            "protection" => DevelopmentSkillType::Protection(0),
+            "magic resistance" => DevelopmentSkillType::MagicResistance(0),
+            "status resist" => DevelopmentSkillType::StatusResist(0),
+            "abnormal resistance" => DevelopmentSkillType::AbnormalResistance(0),
+            "solid" => DevelopmentSkillType::Solid(0),
+            "strike" => DevelopmentSkillType::Strike(0),
+            "piercing strike" => DevelopmentSkillType::PiercingStrike(0),
+            "true strike" => DevelopmentSkillType::TrueStrike(0),
+            "counter-attack" => DevelopmentSkillType::CounterAttack(0),
+            "counter attack" => DevelopmentSkillType::CounterAttack(0),
+            "counterattack" => DevelopmentSkillType::CounterAttack(0),
+            "bloom" => DevelopmentSkillType::Bloom(0),
+            "spirit healing" => DevelopmentSkillType::SpiritHealing(0),
+            "luck" => DevelopmentSkillType::Luck(0),
+            _ => DevelopmentSkillType::Unknown,
+        };
+
+        ty
+    }
+
+    pub fn get_description(&self) -> String {
+        match self {
+            DevelopmentSkillType::Manifestation(el, dt, modi) => format!("{} Resist +{}%. When countering and attacking, regular {}Attack a Foe with {} Element", el.effective_against().to_str(), modi, dt.to_short_str(), el.to_str()),
+            DevelopmentSkillType::Resistance(el, _) => format!("{} Resist", el.to_str()),
+            DevelopmentSkillType::WillOf(el, dt) => format!("When countering and attacking, regular {}Attack a Foe with {} Element", dt.to_short_str(), el.to_str()),
+            DevelopmentSkillType::Bravery(modi) => format!("When countering and attacking, regular attack a Foe & HP Heal {}% of Dmg.", modi),
+            DevelopmentSkillType::Encouragement => String::from("When countering, instead of attacking regularly, it (Lo) Heals an Ally. Prioritizes an Ally with lower percentage HP."),
+            DevelopmentSkillType::Blessing => String::from("When countering, instead of attacking regularly, it extends Status Buff for Allies for 1 turn."),
+            DevelopmentSkillType::Flashback => String::from("Ultra Critical Rate on Counter"),
+            DevelopmentSkillType::Hex(_) => format!("Mag., End., Agi. & Dex."),
+            DevelopmentSkillType::MartialArts(_) => format!("Str., End., Agi. & Dex."),
+            DevelopmentSkillType::Tattletale(_) => format!("Mag. & Agi. & Dex"),
+            DevelopmentSkillType::FightingSpirit(_) => format!("Str. & Agi. & Dex"),
+            DevelopmentSkillType::Rigid(_) => format!("End. & Agi. & Dex"),
+            DevelopmentSkillType::Forestall(_) => format!("Mag. & Agi."),
+            DevelopmentSkillType::BattleArts(_) => format!("Str. & Dex."),
+            DevelopmentSkillType::Concentrate(_) => format!("Agi. & Dex."),
+            DevelopmentSkillType::Instinct(_) => format!("Agi. & Dex."),
+            DevelopmentSkillType::Climb(_) => format!("End. & Agi."),
+            DevelopmentSkillType::Crush(_) => format!("Str."),
+            DevelopmentSkillType::Mage(_) => format!("Mag."),
+            DevelopmentSkillType::MindsEye(_) => format!("Mag."),
+            DevelopmentSkillType::Acceleration(_) => format!("Agi."),
+            DevelopmentSkillType::Hunter(_) => format!("Agi."),
+            DevelopmentSkillType::Protection(_) => format!("P.Resist & M.Resist"),
+            DevelopmentSkillType::MagicResistance(_) => format!("M.Resist"),
+            DevelopmentSkillType::StatusResist(_) => format!("Ailment Resist"),
+            DevelopmentSkillType::AbnormalResistance(_) => format!("Ailment Resist"),
+            DevelopmentSkillType::Solid(_) => format!("Guard Rate"),
+            DevelopmentSkillType::Strike(_) => format!("Critical Damage"),
+            DevelopmentSkillType::PiercingStrike(_) => format!("Penetration Damage"),
+            DevelopmentSkillType::TrueStrike(_) => format!("Dmg. Upon Critical and Penetration"),
+            DevelopmentSkillType::CounterAttack(_) => format!("Counter Damage"),
+            DevelopmentSkillType::Bloom(modi) => format!("{}% HP & MP Regen/turn", modi),
+            DevelopmentSkillType::SpiritHealing(modi) => format!("{}% MP Regen/turn", modi),
+            DevelopmentSkillType::LiarisFreese => String::from("Fast growth. Null Charm."),
+            DevelopmentSkillType::Luck(_) => format!("All Status"),
+            DevelopmentSkillType::Killer(et) => {
+                if et == &EnemyType::Ox {
+                    format!("Ability Pt. toward {}", et.to_desc_str())
+                } else {
+                    format!("Ability Pt. toward {}", et.to_desc_str())
+                }
+            }
+            DevelopmentSkillType::Unknown => String::from(""),
         }
     }
 }
 
 #[derive(PartialEq, Eq)]
 pub enum SkillRank {
+    Question,
     I,
     H,
     G,
@@ -638,6 +857,7 @@ pub enum SkillRank {
 impl HumanReadable for SkillRank {
     fn to_str(&self) -> String {
         match self {
+            SkillRank::Question => "?",
             SkillRank::I => "I",
             SkillRank::H => "H",
             SkillRank::G => "G",
@@ -649,6 +869,25 @@ impl HumanReadable for SkillRank {
             SkillRank::A => "A",
         }
         .to_string()
+    }
+}
+
+impl SkillRank {
+    pub fn str_to_type(inp: &str) -> Option<SkillRank> {
+        let inp = &inp.trim().to_lowercase();
+        Some(match inp.as_str() {
+            "?" => SkillRank::Question,
+            "i" => SkillRank::I,
+            "h" => SkillRank::H,
+            "g" => SkillRank::G,
+            "f" => SkillRank::F,
+            "e" => SkillRank::E,
+            "d" => SkillRank::D,
+            "c" => SkillRank::C,
+            "b" => SkillRank::B,
+            "a" => SkillRank::A,
+            _ => return None,
+        })
     }
 }
 
@@ -666,4 +905,63 @@ pub enum EnemyType {
     Material,
     Worm,
     Fantasma,
+}
+
+impl HumanReadable for EnemyType {
+    fn to_str(&self) -> String {
+        match self {
+            EnemyType::Dragon => "Dragon",
+            EnemyType::Spirit => "Spirit",
+            EnemyType::Giant => "Giant",
+            EnemyType::Ox => "Ox",
+            EnemyType::Beast => "Beast",
+            EnemyType::Ogre => "Ogre",
+            EnemyType::Insect => "Insect",
+            EnemyType::Plant => "Plant",
+            EnemyType::Aqua => "Aqua",
+            EnemyType::Material => "Material",
+            EnemyType::Worm => "Worm",
+            EnemyType::Fantasma => "Fantasma",
+        }
+        .to_string()
+    }
+}
+
+impl EnemyType {
+    pub fn str_to_type(inp: &str) -> Option<EnemyType> {
+        let inp = &inp.trim().to_lowercase();
+        match inp.as_str() {
+            "dragon" => Some(EnemyType::Dragon),
+            "spirit" => Some(EnemyType::Spirit),
+            "giant" => Some(EnemyType::Giant),
+            "ox" => Some(EnemyType::Ox),
+            "beast" => Some(EnemyType::Beast),
+            "ogre" => Some(EnemyType::Ogre),
+            "insect" => Some(EnemyType::Insect),
+            "plant" => Some(EnemyType::Plant),
+            "aqua" => Some(EnemyType::Aqua),
+            "material" => Some(EnemyType::Material),
+            "worm" => Some(EnemyType::Worm),
+            "fantasma" => Some(EnemyType::Fantasma),
+            _ => None,
+        }
+    }
+
+    pub fn to_desc_str(&self) -> String {
+        match self {
+            EnemyType::Dragon => "Dragons",
+            EnemyType::Spirit => "Spirits",
+            EnemyType::Giant => "Giants",
+            EnemyType::Ox => "Ox",
+            EnemyType::Beast => "Beasts",
+            EnemyType::Ogre => "Ogres",
+            EnemyType::Insect => "Insects",
+            EnemyType::Plant => "Plants",
+            EnemyType::Aqua => "Aqua",
+            EnemyType::Material => "Material",
+            EnemyType::Worm => "Worms",
+            EnemyType::Fantasma => "Ghost",
+        }
+        .to_string()
+    }
 }
