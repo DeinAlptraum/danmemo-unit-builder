@@ -4,7 +4,7 @@ use crate::combat_skills::{
 use crate::enums::{
     Attribute, DamageType, Element, EnemyType, HumanReadable, Speed, TempBoost, UnitType,
 };
-use crate::{json_strings::*, DevelopmentSkill};
+use crate::{json_strings::*, DevelopmentSkill, InstantSkill};
 use crate::{Adventurer, AdventurerSkill, Assist, AssistEffect, Unit};
 use regex::{Captures, Regex};
 
@@ -80,13 +80,15 @@ pub fn gen_ass_header(ass: &Assist) -> String {
 fn gen_ass_effects(efs: &Vec<AssistEffect>) -> String {
     let mut res = String::new();
     for ef in efs.iter() {
+        let modi = match &ef.attribute {
+            Attribute::NullPhysical | Attribute::NullMagical | Attribute::NullAilment => {
+                format!("x{}", &ef.modifier.to_string())
+            }
+            _ => ef.mod_to_str(),
+        };
         res.push_str(&template_replace(
             ASS_EFFECT,
-            &[
-                &ef.target.to_json(),
-                &ef.attribute.to_json(),
-                &ef.modifier.to_string(),
-            ],
+            &[&ef.target.to_json(), &ef.attribute.to_json(), &modi],
         ));
         if ef != efs.last().unwrap() {
             res.push_str(",")
@@ -94,6 +96,24 @@ fn gen_ass_effects(efs: &Vec<AssistEffect>) -> String {
     }
 
     res
+}
+
+fn gen_instant_skill(is: &InstantSkill) -> String {
+    let mut instant_str = String::new();
+    instant_str.push_str(ASS_INSTANT_SKILLS_HEADER);
+    let mut efs = String::from("");
+    if let Some(dt) = &is.damage_type {
+        if let Some(el) = &is.element {
+            efs = gen_skill_effects(false, &is.effects, &dt, &el);
+        }
+    } else {
+        efs = gen_skill_effects(false, &is.effects, &DamageType::Physical, &Element::None);
+    }
+    instant_str.push_str(&efs);
+    instant_str.push_str(ASS_INSTANT_SKILLS_HEADER_TWO);
+    instant_str.push_str(&efs);
+    instant_str.push_str(ASS_INSTANT_SKILL_FOOTER);
+    instant_str
 }
 
 pub fn gen_ass_skill(ass: &Assist) -> String {
@@ -119,19 +139,7 @@ pub fn gen_ass_skill(ass: &Assist) -> String {
                 ],
             );
 
-            instant_str.push_str(ASS_INSTANT_SKILLS_HEADER);
-            let mut efs = String::from("");
-            if let Some(dt) = &is.damage_type {
-                if let Some(el) = &is.element {
-                    efs = gen_skill_effects(false, &is.effects, &dt, &el);
-                }
-            } else {
-                efs = gen_skill_effects(false, &is.effects, &DamageType::Physical, &Element::None);
-            }
-            instant_str.push_str(&efs);
-            instant_str.push_str(ASS_INSTANT_SKILLS_HEADER_TWO);
-            instant_str.push_str(&efs);
-            instant_str.push_str(ASS_INSTANT_SKILL_FOOTER);
+            instant_str = gen_instant_skill(is);
         }
     }
 

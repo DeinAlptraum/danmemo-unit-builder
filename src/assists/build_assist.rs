@@ -37,7 +37,7 @@ fn build_mlb_effects(base_efs: &Vec<AssistEffect>) -> Vec<AssistEffect> {
     let mut mlb_effects: Vec<AssistEffect> = Vec::new();
     for ef in base_efs {
         println!(
-            "\nAt base, the effect was: {}\nWhat is the modifer at mlb?",
+            "\nAt base, the effect was: {}\nWhat is the modifer at MLB?",
             ef.to_str()
         );
         let modi = get_ass_modifier(&ef.attribute);
