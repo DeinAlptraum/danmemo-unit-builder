@@ -99,14 +99,56 @@ fn gen_ass_effects(efs: &Vec<AssistEffect>) -> String {
 pub fn gen_ass_skill(ass: &Assist) -> String {
     let mut res = template_replace(ASS_SKILLS_HEAD, &[&ass.skill.name]);
 
+    let mut ia_base = String::from("");
+    let mut ia_mlb = String::from("");
+    let mut instant_str = String::from("");
+    if let Some(is) = &ass.instant_skill {
+        if let Some(ia) = &ass.skill.instant_effect {
+            ia_base = template_replace(
+                INSTANT_EFFECT,
+                &[
+                    &ia.base_duration.to_string(),
+                    &ia.max_activations.to_string(),
+                ],
+            );
+            ia_mlb = template_replace(
+                INSTANT_EFFECT,
+                &[
+                    &ia.mlb_duration.to_string(),
+                    &ia.max_activations.to_string(),
+                ],
+            );
+
+            instant_str.push_str(ASS_INSTANT_SKILLS_HEADER);
+            let mut efs = String::from("");
+            if let Some(dt) = &is.damage_type {
+                if let Some(el) = &is.element {
+                    efs = gen_skill_effects(false, &is.effects, &dt, &el);
+                }
+            } else {
+                efs = gen_skill_effects(false, &is.effects, &DamageType::Physical, &Element::None);
+            }
+            instant_str.push_str(&efs);
+            instant_str.push_str(ASS_INSTANT_SKILLS_HEADER_TWO);
+            instant_str.push_str(&efs);
+            instant_str.push_str(ASS_INSTANT_SKILL_FOOTER);
+        }
+    }
+
     let base_effects = gen_ass_effects(&ass.skill.base_effects);
     res.push_str(&base_effects);
+    res.push_str(&ia_base);
 
     res.push_str(ASS_FOOT_SKILL_ONE);
     res.push_str(&template_replace(ASS_SKILL_TWO_HEAD, &[&ass.skill.name]));
 
     let mlb_effects = gen_ass_effects(&ass.skill.mlb_effects);
     res.push_str(&mlb_effects);
+    res.push_str(&ia_mlb);
+
+    res.push_str(ASS_FOOT_SKILL_TWO);
+
+    res.push_str(&instant_str);
 
     res.push_str(ASS_FOOT);
 

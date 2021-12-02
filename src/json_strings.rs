@@ -114,29 +114,62 @@ pub const STATS_MAG: &str = "
 
 // Assist Skills
 pub const ASS_SKILLS_HEAD: &str = "    
-    \"skills\": [
-        {
-            \"name\": \"$0+\",
-            \"effects\": [";
+    \"skills\": {
+        \"regular\": [
+            {
+                \"name\": \"$0+\",
+                \"effects\": [";
+
 pub const ASS_EFFECT: &str = "
-                {
-                    \"target\": \"$0\",
-                    \"attribute\": \"$1\",
-                    \"modifier\": \"$2\"
-                }";
+                    {
+                        \"target\": \"$0\",
+                        \"attribute\": \"$1\",
+                        \"modifier\": \"$2\"
+                    }";
+
+pub const INSTANT_EFFECT: &str = ",
+                    {
+                        \"modifier\": \"\",
+                        \"target\": \"skill\",
+                        \"attribute\": \"instant_effect\",
+                        \"duration\": \"+$0\",
+                        \"max_activations\": \"$1\"
+                    }";
 
 pub const ASS_FOOT_SKILL_ONE: &str = "
-            ]
-        },";
+                ]
+            },";
+
 pub const ASS_SKILL_TWO_HEAD: &str = "
-        {
-            \"name\": \"$0++\",
-            \"effects\": [";
+            {
+                \"name\": \"$0++\",
+                \"effects\": [";
+
+pub const ASS_FOOT_SKILL_TWO: &str = "
+                ]
+            }
+        ]";
+
+pub const ASS_INSTANT_SKILLS_HEADER: &str = ",
+        \"instant_effect\": [
+            {
+                \"name\": \"instant effect +\",
+                \"effects\": [";
+
+pub const ASS_INSTANT_SKILLS_HEADER_TWO: &str = "
+                ]
+            },
+            {
+                \"name\": \"instant effect ++\",
+                \"effects\": [";
+
+pub const ASS_INSTANT_SKILL_FOOTER: &str = "
+                ]
+            }
+        ]";
 
 pub const ASS_FOOT: &str = "
-            ]
-        }
-    ]
+    }
 }";
 
 // Adventurer Skills

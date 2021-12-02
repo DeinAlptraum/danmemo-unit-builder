@@ -3,7 +3,7 @@ use crate::get_attributes::*;
 
 // Assist Skill
 pub fn get_ass_skill_name() -> String {
-    println!("What is the name of the assist's skill? (without '+' at the end)");
+    println!("\nWhat is the name of the assist's skill? (without '+' at the end)");
     let name = read_str();
     name
 }
@@ -114,7 +114,7 @@ fn get_ass_modifier_generic() -> i32 {
 
 // Get assist skill effect attribute, main menu plus 7 submenus
 pub fn get_ass_attribute() -> Attribute {
-    println!("\nWhat effect does it have/what attribute does it affect?");
+    println!("\nWhat effect does the regular skill have/what attribute does it affect?");
     println!("1: Base stats (Strength etc.)");
     println!("2: Resistances");
     println!("3: All Targets or Single Target Damage");
@@ -145,7 +145,7 @@ pub fn get_ass_attribute() -> Attribute {
 
 fn get_ass_attr_heal() -> Attribute {
     get_numeric_option(
-        "How does it affect healing/what sort of healing does it do?",
+        "\nHow does it affect healing/what sort of healing does it do?",
         vec![
             Attribute::Heal,
             Attribute::HPRegen,
@@ -158,7 +158,7 @@ fn get_ass_attr_heal() -> Attribute {
 
 fn get_ass_attr_ail() -> Attribute {
     get_numeric_option(
-        "What ailment does it inflict?",
+        "\nWhat ailment does it inflict?",
         vec![
             Attribute::Sleep,
             Attribute::Stun,
@@ -173,7 +173,7 @@ fn get_ass_attr_ail() -> Attribute {
 
 fn get_ass_attr_null_turns() -> Attribute {
     get_numeric_option(
-        "What does it affect?",
+        "\nWhat does it affect?",
         vec![
             Attribute::NullPhysical,
             Attribute::NullMagical,
@@ -187,7 +187,7 @@ fn get_ass_attr_null_turns() -> Attribute {
 
 fn get_ass_attr_misc() -> Attribute {
     get_numeric_option(
-        "What does it affect?",
+        "\nWhat does it affect?",
         vec![
             Attribute::GuardRate,
             Attribute::CounterRate,
@@ -196,5 +196,43 @@ fn get_ass_attr_misc() -> Attribute {
             Attribute::SACharge,
         ],
         1,
+    )
+}
+
+// Instant Effects
+pub fn get_ia_base_duration() -> u32 {
+    get_u32("\nHow many times can the effect be activated at base?")
+}
+
+pub fn get_ia_mlb_duration() -> u32 {
+    get_u32("How many times can the effect be activated at MLB?")
+}
+
+pub fn get_ia_max_activations() -> u32 {
+    get_u32("\nHow many times per turn can the effect be activated?")
+}
+
+pub fn get_instant_damage_type() -> DamageType {
+    get_numeric_option(
+        "\nWhat type of damage does the attack do?",
+        vec![DamageType::Physical, DamageType::Magic],
+        1,
+    )
+}
+
+pub fn get_instant_element() -> Element {
+    get_numeric_option(
+        "\nWhat is the attack's element?",
+        vec![
+            Element::None,
+            Element::Light,
+            Element::Dark,
+            Element::Fire,
+            Element::Water,
+            Element::Thunder,
+            Element::Earth,
+            Element::Wind,
+        ],
+        0,
     )
 }

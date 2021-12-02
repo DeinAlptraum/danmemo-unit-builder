@@ -7,7 +7,7 @@ pub use adventurer::Adventurer;
 pub mod combat_skills;
 
 mod build_adv;
-pub use build_adv::build_adv;
+pub use build_adv::*;
 
 mod dev_skill;
 pub use dev_skill::DevelopmentSkill;

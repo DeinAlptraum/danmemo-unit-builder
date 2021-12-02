@@ -150,7 +150,7 @@ fn build_kill_resist() -> KillResist {
 }
 
 // Combat Skill building
-fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
+pub fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     let mut sk = AdventurerSkill::new();
 
     println!("\nWhich of the following effects does the skill have? (enter applicable separated by spaces, e.g. '2 4 5'");
@@ -221,8 +221,7 @@ fn build_speedless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
 }
 
 fn build_sa() -> AdventurerSkill {
-    print!("\x1B[2J\x1B[1;1H"); // clears console
-    println!("Let's build the unit's SA");
+    println!("\n\n\nLet's build the unit's SA");
     let sk = build_speedless_skill(true, &mut false);
     sk
 }
@@ -236,16 +235,14 @@ fn build_adv_skill(has_aa: &mut bool) -> AdventurerSkill {
 fn build_adv_skills(has_aa: &mut bool) -> Vec<AdventurerSkill> {
     let mut skills = Vec::new();
     for i in 1..4 {
-        print!("\x1B[2J\x1B[1;1H"); // clears console
-        println!("Let's build the {}. regular skill", i);
+        println!("\n\n\nLet's build the {}. regular skill", i);
         skills.push(build_adv_skill(has_aa));
     }
     skills
 }
 
 fn build_additional_action() -> AdventurerSkill {
-    print!("\x1B[2J\x1B[1;1H"); // clears console
-    println!("Let's build the unit's additional action");
+    println!("\n\n\nLet's build the unit's additional action");
     let sk = build_nameless_skill(true, &mut false);
     sk
 }
@@ -315,9 +312,8 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
 }
 
 fn build_dev_skills(adv: &Adventurer) -> Vec<DevelopmentSkill> {
-    print!("\x1B[2J\x1B[1;1H"); // clears console
     let mut devs = Vec::new();
-    println!("Let's build the development skills");
+    println!("\n\n\nLet's build the development skills");
     loop {
         devs.push(build_dev_skill(&adv));
 

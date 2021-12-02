@@ -1,5 +1,6 @@
 use super::get_ass_attributes::*;
-use crate::get_attributes::*;
+use crate::build_nameless_skill;
+use crate::{get_attributes::*, InstantEffect, InstantSkill};
 use crate::{Assist, AssistEffect, AssistSkill, Unit};
 
 fn build_ass_effect() -> AssistEffect {
@@ -10,30 +11,31 @@ fn build_ass_effect() -> AssistEffect {
     effect
 }
 
-fn build_ass_skill() -> AssistSkill {
-    let mut skill = AssistSkill::new();
-    skill.name = get_ass_skill_name();
-
-    let mut base_effects: Vec<AssistEffect> = Vec::new();
+fn build_base_effects() -> Vec<AssistEffect> {
+    let mut efs: Vec<AssistEffect> = Vec::new();
     println!("\nLet's build the assist's base skill");
     loop {
         let effect = build_ass_effect();
-        base_effects.push(effect);
+        efs.push(effect);
 
         println!("\nThe skill currently has the following effects:");
-        for ef in base_effects.iter() {
+        for ef in &efs {
             println!("{}", ef.to_str());
         }
 
-        println!("Does the skill have another effect? n/no: no, anything else: yes");
+        println!("Does the skill have another regular effect? n/no: no, anything else: yes");
         let ans = read_str();
         if ans == "n" || ans == "no" {
             break;
         }
     }
 
+    efs
+}
+
+fn build_mlb_effects(base_efs: &Vec<AssistEffect>) -> Vec<AssistEffect> {
     let mut mlb_effects: Vec<AssistEffect> = Vec::new();
-    for ef in base_effects.iter() {
+    for ef in base_efs {
         println!(
             "\nAt base, the effect was: {}\nWhat is the modifer at mlb?",
             ef.to_str()
@@ -44,13 +46,50 @@ fn build_ass_skill() -> AssistSkill {
         mlb_effects.push(mlb_ef);
     }
 
-    skill.base_effects = base_effects;
-    skill.mlb_effects = mlb_effects;
+    mlb_effects
+}
+
+fn build_instant_effect() -> Option<InstantEffect> {
+    println!("\nDoes the skill have an instant effect? n/no: no, anything else: yes");
+    let ans = read_str();
+    if ans == "n" || ans == "no" {
+        return None;
+    } else {
+        let mut ia = InstantEffect::new();
+        ia.base_duration = get_ia_base_duration();
+        ia.mlb_duration = get_ia_mlb_duration();
+        ia.max_activations = get_ia_max_activations();
+        return Some(ia);
+    }
+}
+
+fn build_ass_skill() -> AssistSkill {
+    let mut skill = AssistSkill::new();
+    skill.name = get_ass_skill_name();
+
+    skill.instant_effect = build_instant_effect();
+
+    skill.base_effects = build_base_effects();
+    skill.mlb_effects = build_mlb_effects(&skill.base_effects);
     skill
+}
+
+fn build_instant_skill() -> InstantSkill {
+    println!("\n\nLets build the instant effects");
+    let mut is = InstantSkill::new();
+    is.effects = build_nameless_skill(true, &mut false);
+    if let Some(_) = is.effects.dmg_effect {
+        is.damage_type = Some(get_instant_damage_type());
+        is.element = Some(get_instant_element());
+    }
+    is
 }
 
 pub fn build_ass(unit: Unit) -> Assist {
     let mut ass = Assist::new(unit);
     ass.skill = build_ass_skill();
+    if let Some(_) = &ass.skill.instant_effect {
+        ass.instant_skill = Some(build_instant_skill());
+    }
     ass
 }

@@ -12,3 +12,9 @@ pub use build_assist::build_ass;
 
 mod get_ass_attributes;
 pub use get_ass_attributes::*;
+
+mod instant_effect;
+pub use instant_effect::InstantEffect;
+
+mod instant_skill;
+pub use instant_skill::InstantSkill;
