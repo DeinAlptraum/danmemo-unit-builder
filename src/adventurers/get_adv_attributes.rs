@@ -195,7 +195,8 @@ pub fn get_buff_attribute() -> Attribute {
     println!("4: Elemental damage");
     println!("5: Rate buffs (Guard Rate etc.");
     println!("6: HP Regen");
-    println!("7: S.A Gauge Charge gain");
+    println!("7: Heal Buff (increase to amount healed by other skills)");
+    println!("8: S.A Gauge Charge gain");
 
     loop {
         let ans = read_num();
@@ -206,9 +207,10 @@ pub fn get_buff_attribute() -> Attribute {
             4 => return get_attr_el(),
             5 => return get_adv_attr_rate(),
             6 => return Attribute::HPRegen,
-            7 => return Attribute::SACharge,
+            7 => return Attribute::HealRate,
+            8 => return Attribute::SACharge,
             _ => {
-                println!("Please enter a number from 1 to 7");
+                println!("Please enter a number from 1 to 8");
                 continue;
             }
         }
@@ -269,7 +271,8 @@ pub fn get_buff_removal_attribute(kind: &BuffType) -> Attribute {
     println!("4: Elemental damage");
     println!("5: Rate buffs (Guard Rate etc.");
     println!("6: HP Regen");
-    println!("7: All");
+    println!("7: Heal Buff (increase to amount healed by other skills)");
+    println!("8: All");
 
     loop {
         let ans = read_num();
@@ -280,12 +283,13 @@ pub fn get_buff_removal_attribute(kind: &BuffType) -> Attribute {
             4 => return get_attr_el(),
             5 => return get_adv_attr_rate(),
             6 => return Attribute::HPRegen,
-            7 => match kind {
+            7 => return Attribute::Heal,
+            8 => match kind {
                 BuffType::Buff => return Attribute::BuffTurns,
                 BuffType::Debuff => return Attribute::DebuffTurns,
             },
             _ => {
-                println!("Please enter a number from 1 to 7");
+                println!("Please enter a number from 1 to 8");
                 continue;
             }
         }

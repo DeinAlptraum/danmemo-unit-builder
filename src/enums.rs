@@ -240,7 +240,7 @@ impl Attribute {
             Attribute::HPRegen => "hp_regen",
             Attribute::MPHeal => "mp_heal",
             Attribute::MPRegen => "mp_regen",
-            Attribute::HealRate => "heal",
+            Attribute::HealRate => "heal_modifier",
             Attribute::Sleep => "sleep",
             Attribute::Stun => "stun",
             Attribute::Seal => "seal",

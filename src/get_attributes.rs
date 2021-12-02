@@ -5,9 +5,8 @@ use std::io::{stdin, stdout, Write};
 
 // Helper functions
 pub fn read_num() -> i32 {
-    let mut input = String::new();
-
     loop {
+        let mut input = String::new();
         stdin().read_line(&mut input).expect("Error reading input. I have no idea why this is happening, but please tell me anyway so I can try to fix it.");
         match input.trim().parse() {
             Ok(result) => return result,
