@@ -118,11 +118,12 @@ pub fn get_lifesteal() -> u32 {
 // Per Skill Effect Damage Boosts
 pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
     println!("\nOn which attributes does the damage buff depend? (enter applicable separated by spaces, e.g. '2 3 12')");
-    println!("1: Strength, 2: Magic, 3: Agility, 4: Dexterity, 5: Endurance");
+    println!("1: Strength, 2: Magic, 3: Endurance, 4: Dexterity, 5: Agility");
     println!("6: P.Resist, 7: M.Resist, 8: Dmg. received (Attack Type: All Targets), 9: Dmg. received (Attack Type: Single Target)");
     println!("10: Light Dmg., 11: Dark Dmg., 12: Fire Dmg., 13: Water Dmg.");
     println!("14: Thunder Dmg., 15: Earth Dmg., 16: Wind Dmg.");
-    println!("17: Guard Rate, 18: Counter Rate, 19: Critical Rate, 20: Penetration Rate");
+    println!("17: Critical Rate, 18: Penetration Rate, 19: Counter Rate, 20: Guard Rate");
+    println!("21: Sleep, 22: Stun, 23: Seal, 24: Slow, 25: Taunt, 26: Poison, 27: Charm");
     'outer: loop {
         let ans = read_multinum();
         let mut res = Vec::new();
@@ -130,9 +131,9 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
             match num {
                 1 => res.push(Attribute::Strength),
                 2 => res.push(Attribute::Magic),
-                3 => res.push(Attribute::Agility),
+                3 => res.push(Attribute::Endurance),
                 4 => res.push(Attribute::Dexterity),
-                5 => res.push(Attribute::Endurance),
+                5 => res.push(Attribute::Agility),
                 6 => res.push(Attribute::PhysicalResistance),
                 7 => res.push(Attribute::MagicResistance),
                 8 => res.push(Attribute::AoEResistance),
@@ -144,12 +145,19 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
                 14 => res.push(Attribute::ThunderDamage),
                 15 => res.push(Attribute::EarthDamage),
                 16 => res.push(Attribute::WindDamage),
-                17 => res.push(Attribute::GuardRate),
-                18 => res.push(Attribute::CounterRate),
-                19 => res.push(Attribute::CriticalRate),
-                20 => res.push(Attribute::PenetrationRate),
+                17 => res.push(Attribute::CriticalRate),
+                18 => res.push(Attribute::PenetrationRate),
+                19 => res.push(Attribute::CounterRate),
+                20 => res.push(Attribute::GuardRate),
+                21 => res.push(Attribute::Sleep),
+                22 => res.push(Attribute::Stun),
+                23 => res.push(Attribute::Seal),
+                24 => res.push(Attribute::Slow),
+                25 => res.push(Attribute::Taunt),
+                26 => res.push(Attribute::Poison),
+                27 => res.push(Attribute::Charm),
                 _ => {
-                    println!("Please enter a number from 1 to 20");
+                    println!("Please enter a number from 1 to 27");
                     continue 'outer;
                 }
             }
@@ -221,10 +229,10 @@ fn get_adv_attr_rate() -> Attribute {
     get_numeric_option(
         "\nWhich rate does it affect?",
         vec![
-            Attribute::GuardRate,
-            Attribute::CounterRate,
             Attribute::CriticalRate,
             Attribute::PenetrationRate,
+            Attribute::CounterRate,
+            Attribute::GuardRate,
         ],
         1,
     )
@@ -451,6 +459,7 @@ pub fn get_ail_kind() -> Attribute {
             Attribute::Slow,
             Attribute::Taunt,
             Attribute::Poison,
+            Attribute::Charm,
         ],
         1,
     )

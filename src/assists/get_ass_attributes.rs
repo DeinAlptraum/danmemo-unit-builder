@@ -16,13 +16,14 @@ pub fn get_ass_target(attr: &Attribute) -> Target {
         | Attribute::Seal
         | Attribute::Slow
         | Attribute::Taunt
-        | Attribute::Poison => Target::Foes,
+        | Attribute::Poison
+        | Attribute::Charm => Target::Foes,
         _ => get_ass_target_no_ailment(),
     }
 }
 
 fn get_ass_target_no_ailment() -> Target {
-    println!("Who is the effect's target? (1: Self, 2: Allies, 3: Foes)");
+    println!("\nWho is the effect's target? (1: Self, 2: Allies, 3: Foes)");
 
     loop {
         let input = read_num();
@@ -47,7 +48,8 @@ pub fn get_ass_modifier(attr: &Attribute) -> i32 {
         | Attribute::Seal
         | Attribute::Slow
         | Attribute::Taunt
-        | Attribute::Poison => get_ass_modifier_ailment(),
+        | Attribute::Poison
+        | Attribute::Charm => get_ass_modifier_ailment(),
         Attribute::NullPhysical | Attribute::NullMagical | Attribute::NullAilment => {
             get_ass_modifier_null()
         }
@@ -57,12 +59,12 @@ pub fn get_ass_modifier(attr: &Attribute) -> i32 {
 }
 
 fn get_ass_modifier_aoe_st() -> i32 {
-    println!("By how many percent does it increase or decrease damage? (leave out the '%' sign)");
+    println!("\nBy how many percent does it increase or decrease damage? (leave out the '%' sign)");
     -1 * read_num()
 }
 
 fn get_ass_modifier_mp_regen() -> i32 {
-    println!("How many MP does it regen per turn?");
+    println!("\nHow many MP does it regen per turn?");
 
     loop {
         let ans = read_num();
@@ -75,7 +77,7 @@ fn get_ass_modifier_mp_regen() -> i32 {
 }
 
 fn get_ass_modifier_ailment() -> i32 {
-    println!("What is the chance to activate the ailment? (leave out the '%' sign)");
+    println!("\nWhat is the chance to activate the ailment? (leave out the '%' sign)");
 
     loop {
         let ans = read_num();
@@ -88,7 +90,7 @@ fn get_ass_modifier_ailment() -> i32 {
 }
 
 fn get_ass_modifier_null() -> i32 {
-    println!("How many nulls does it add?");
+    println!("\nHow many nulls does it add?");
 
     loop {
         let ans = read_num();
@@ -102,13 +104,13 @@ fn get_ass_modifier_null() -> i32 {
 
 fn get_ass_modifier_buff_turns() -> i32 {
     println!(
-        "By how many turns does it lengthen buffs/debuffs? (negative number for decreasing turns"
+        "\nBy how many turns does it lengthen buffs/debuffs? (negative number for decreasing turns"
     );
     read_num()
 }
 
 fn get_ass_modifier_generic() -> i32 {
-    println!("By how many percent does it increase/decrease the stat? (negative number for decrease. Leave out the '%' sign)");
+    println!("\nBy how many percent does it increase/decrease the stat? (negative number for decrease. Leave out the '%' sign)");
     read_num()
 }
 
@@ -122,7 +124,7 @@ pub fn get_ass_attribute() -> Attribute {
     println!("5: Healing (HP or MP)");
     println!("6: Ailments");
     println!("7: Nulls or Buff/Debuff turns");
-    println!("8: Misc (Guard Rate, S.A charge etc.");
+    println!("8: Misc (Guard Rate, S.A charge etc.)");
 
     loop {
         let ans = read_num();
@@ -166,6 +168,7 @@ fn get_ass_attr_ail() -> Attribute {
             Attribute::Slow,
             Attribute::Taunt,
             Attribute::Poison,
+            Attribute::Charm,
         ],
         1,
     )
@@ -189,10 +192,10 @@ fn get_ass_attr_misc() -> Attribute {
     get_numeric_option(
         "\nWhat does it affect?",
         vec![
-            Attribute::GuardRate,
-            Attribute::CounterRate,
             Attribute::CriticalRate,
             Attribute::PenetrationRate,
+            Attribute::CounterRate,
+            Attribute::GuardRate,
             Attribute::SACharge,
         ],
         1,

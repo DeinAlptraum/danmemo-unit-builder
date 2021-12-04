@@ -201,9 +201,9 @@ pub fn get_attr_base() -> Attribute {
         vec![
             Attribute::Strength,
             Attribute::Magic,
-            Attribute::Agility,
-            Attribute::Dexterity,
             Attribute::Endurance,
+            Attribute::Dexterity,
+            Attribute::Agility,
         ],
         1,
     )
@@ -229,6 +229,7 @@ pub fn get_attr_res() -> Attribute {
             Attribute::SlowResist,
             Attribute::TauntResist,
             Attribute::PoisonResist,
+            Attribute::CharmResist,
             Attribute::AilmentResist,
         ],
         1,

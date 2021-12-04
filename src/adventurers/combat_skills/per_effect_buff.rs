@@ -46,17 +46,32 @@ impl PerEffectBuff {
     }
 
     pub fn to_json(&self, attr: &Attribute) -> String {
-        let mut res = String::from("per_each_");
+        let mut res: String;
+        match attr {
+            Attribute::Sleep
+            | Attribute::Stun
+            | Attribute::Seal
+            | Attribute::Slow
+            | Attribute::Taunt
+            | Attribute::Poison => {
+                res = String::from("against_");
+                res.push_str(attr.to_json());
+                res.push_str("_target");
+            }
+            _ => {
+                res = String::from("per_each_");
 
-        if self.source == Target::Auto {
-            res.push_str("self_");
-        } else {
-            res.push_str("target_");
+                if self.source == Target::Auto {
+                    res.push_str("self_");
+                } else {
+                    res.push_str("target_");
+                }
+
+                res.push_str(attr.to_json());
+                res.push_str("_");
+                res.push_str(&self.kind.to_json());
+            }
         }
-
-        res.push_str(attr.to_json());
-        res.push_str("_");
-        res.push_str(&self.kind.to_json());
 
         res
     }

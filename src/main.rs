@@ -34,6 +34,7 @@ This program operates under the following simplifying assumptions:
     Revival skills (e.g. Forbidden Chant Fels' SA) don't exist
     Curse removal skills (e.g. Cynic Cassandra Ilion) don't exist
     attacks indexed to certain attributes don't exist
+    attacks can't get a Dmg. boost from both regular buffs/debuffs AND ailment on a target
 Should any of these assumptions be incorrect for the unit you're creating, you will have to fix the resulting JSON yourself.\n");
 
     let unit = build_unit();

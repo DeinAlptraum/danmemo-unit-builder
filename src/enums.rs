@@ -59,7 +59,7 @@ impl Target {
 }
 
 // Assist related enums
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Attribute {
     // Buffs & Debuffs
     // Base Stats
@@ -82,6 +82,7 @@ pub enum Attribute {
     SlowResist,
     TauntResist,
     PoisonResist,
+    CharmResist,
     AilmentResist,
 
     // Elementals
@@ -103,10 +104,10 @@ pub enum Attribute {
     WindDamage,
 
     // Auxiliary RNG Buffs
-    GuardRate,
-    CounterRate,
     CriticalRate,
     PenetrationRate,
+    CounterRate,
+    GuardRate,
 
     // Others
     SACharge,
@@ -126,6 +127,7 @@ pub enum Attribute {
     Slow,
     Taunt,
     Poison,
+    Charm,
 
     // Nulls
     NullPhysical,
@@ -164,10 +166,10 @@ impl HumanReadable for Attribute {
             Attribute::ThunderDamage => "Thunder Attack Dmg.",
             Attribute::EarthDamage => "Earth Attack Dmg.",
             Attribute::WindDamage => "Wind Attack Dmg.",
-            Attribute::GuardRate => "Guard Rate",
-            Attribute::CounterRate => "Counter Rate",
             Attribute::CriticalRate => "Critical Rate",
             Attribute::PenetrationRate => "Penetration Rate",
+            Attribute::CounterRate => "Counter Rate",
+            Attribute::GuardRate => "Guard Rate",
             Attribute::Heal => "HP Heal",
             Attribute::HPRegen => "HP Regen/turn",
             Attribute::MPHeal => "MP Heal",
@@ -179,12 +181,14 @@ impl HumanReadable for Attribute {
             Attribute::Slow => "Slow",
             Attribute::Taunt => "Taunt",
             Attribute::Poison => "Poison",
+            Attribute::Charm => "Charm",
             Attribute::SleepResist => "Sleep Resist",
             Attribute::StunResist => "Stun Resist",
             Attribute::SealResist => "Seal Resist",
             Attribute::SlowResist => "Slow Resist",
             Attribute::TauntResist => "Taunt Resist",
             Attribute::PoisonResist => "Poison Resist",
+            Attribute::CharmResist => "Charm Resist",
             Attribute::AilmentResist => "Ailment Resist",
             Attribute::NullPhysical => "Null P.Attack",
             Attribute::NullMagical => "Null M.Attack",
@@ -215,6 +219,7 @@ impl Attribute {
             Attribute::SlowResist => "slow_resist",
             Attribute::TauntResist => "taunt_resist",
             Attribute::PoisonResist => "poison_resist",
+            Attribute::CharmResist => "charm_resist",
             Attribute::AilmentResist => "ailment_resist",
             Attribute::LightResistance => "light_resist",
             Attribute::DarkResistance => "dark_resist",
@@ -231,10 +236,10 @@ impl Attribute {
             Attribute::ThunderDamage => "thunder_attack",
             Attribute::EarthDamage => "earth_attack",
             Attribute::WindDamage => "wind_attack",
-            Attribute::GuardRate => "guard_rate",
-            Attribute::CounterRate => "counter_rate",
             Attribute::CriticalRate => "critical_rate",
             Attribute::PenetrationRate => "penetration_rate",
+            Attribute::CounterRate => "counter_rate",
+            Attribute::GuardRate => "guard_rate",
             Attribute::SACharge => "sa_gauge_charge",
             Attribute::Heal => "heal",
             Attribute::HPRegen => "hp_regen",
@@ -247,6 +252,7 @@ impl Attribute {
             Attribute::Slow => "slow",
             Attribute::Taunt => "taunt",
             Attribute::Poison => "poison",
+            Attribute::Charm => "charm",
             Attribute::NullPhysical => "null_physical_attack_no_special",
             Attribute::NullMagical => "null_magic_attack_no_special",
             Attribute::NullAilment => "null_ailments",

@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use super::combat_skills::*;
 use super::get_adv_attributes::*;
 use crate::enums::{Attribute, DevelopmentSkillType, HumanReadable, SkillRank, Speed};
@@ -16,16 +18,35 @@ fn build_rate_buff() -> RateBuff {
 fn build_per_effect_boost() -> PerEffectBuff {
     let mut ef = PerEffectBuff::new();
     ef.attributes = get_per_effect_boost_attrs();
-    ef.source = get_per_effect_boost_source();
-    ef.kind = get_per_effect_boost_kind();
+    let ails: HashSet<Attribute> = vec![
+        Attribute::Sleep,
+        Attribute::Stun,
+        Attribute::Seal,
+        Attribute::Slow,
+        Attribute::Taunt,
+        Attribute::Poison,
+        Attribute::Charm,
+    ]
+    .into_iter()
+    .collect();
+    if ails
+        .intersection(&ef.attributes.clone().into_iter().collect())
+        .count()
+        == 0
+    {
+        ef.source = get_per_effect_boost_source();
+        ef.kind = get_per_effect_boost_kind();
+    }
     ef.modifier = get_per_effect_boost_mod();
     ef
 }
 
 fn build_dmg_effect() -> Damaging {
-    println!("\nWhich of the following effects does the attack have? (enter applicable separated by spaces, e.g. '2 4'");
-    println!("1: Temporary boost (e.g 'temp. Str. Boost'");
-    println!("2: Per effect boosts (e.g. '+40% per each [Self] Dex. Buff Skill')");
+    println!("\nWhich of the following effects does the attack have? (enter applicable separated by spaces, e.g. '2 4')");
+    println!("1: Temporary boost (e.g 'temp. Str. Boost')");
+    println!(
+        "2: Per effect/ailment on target boosts (e.g. '+40% per each [Self] Dex. Buff Skill')"
+    );
     println!("3: Rate buffs (e.g. 'Ultra Unguard Rate')");
     println!("4: Life Steal");
     let ans = read_multinum();
@@ -305,7 +326,7 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
     };
 
     if let Unknown(_) = dev.effect {
-        println!("Name no recognized. A suitable section in the JSON will be created, but you will have to fill it out yourself.")
+        println!("Name not recognized. A suitable section in the JSON will be created, but you will have to fill it out yourself.")
     }
 
     dev
