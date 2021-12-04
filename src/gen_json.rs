@@ -101,11 +101,9 @@ fn gen_ass_effects(efs: &Vec<AssistEffect>) -> String {
 fn gen_instant_skill(is: &InstantSkill) -> String {
     let mut instant_str = String::new();
     instant_str.push_str(ASS_INSTANT_SKILLS_HEADER);
-    let mut efs = String::from("");
-    if let Some(dt) = &is.damage_type {
-        if let Some(el) = &is.element {
-            efs = gen_skill_effects(false, &is.effects, &dt, &el);
-        }
+    let efs;
+    if let (Some(dt), Some(el)) = (&is.damage_type, &is.element) {
+        efs = gen_skill_effects(false, &is.effects, &dt, &el);
     } else {
         efs = gen_skill_effects(false, &is.effects, &DamageType::Physical, &Element::None);
     }
@@ -590,7 +588,7 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
         | Bloom(_)
         | SpiritHealing(_)
         | LiarisFreese
-        | Unknown => String::from(""),
+        | Unknown(_) => String::from(""),
         Resistance(_, modi)
         | Hex(modi)
         | MartialArts(modi)

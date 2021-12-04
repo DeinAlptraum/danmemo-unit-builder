@@ -20,7 +20,7 @@ impl HumanReadable for DevelopmentSkill {
 impl DevelopmentSkill {
     pub fn new() -> DevelopmentSkill {
         DevelopmentSkill {
-            effect: DevelopmentSkillType::Unknown,
+            effect: DevelopmentSkillType::Unknown(String::new()),
             rank: None,
         }
     }

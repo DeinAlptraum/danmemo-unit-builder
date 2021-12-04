@@ -559,7 +559,7 @@ impl HealModifier {
 
 #[derive(PartialEq, Eq)]
 pub enum DevelopmentSkillType {
-    Unknown,
+    Unknown(String),
 
     // Elemental & Counters
     Manifestation(Element, DamageType, u32), // modifier resist
@@ -686,25 +686,26 @@ impl HumanReadable for DevelopmentSkillType {
                     format!("{} Killer", x.to_str())
                 }
             }
-            DevelopmentSkillType::Unknown => String::from("Unknown, please fill in"),
+            DevelopmentSkillType::Unknown(title) => title.to_string(),
         }
     }
 }
 
 impl DevelopmentSkillType {
-    pub fn str_to_type(inp: &str) -> DevelopmentSkillType {
-        let mut inp = inp.trim().to_lowercase();
+    pub fn str_to_type(orig_inp: &str) -> DevelopmentSkillType {
+        let mut inp = orig_inp.trim().to_string();
         if inp.contains(":") {
             inp = inp.split(":").nth(0).unwrap().trim().to_string();
         }
+        let inp_lower = inp.to_lowercase();
 
         // Check if it is a killer / slayer skill
-        if inp.contains("killer") || inp.contains("slayer") {
-            let o_et = inp.split(" ").nth(0);
+        if inp_lower.contains("killer") || inp_lower.contains("slayer") {
+            let o_et = inp_lower.split(" ").nth(0);
             if let Some(mut et_str) = o_et {
                 et_str = et_str.trim();
                 if let Some(et) = EnemyType::str_to_type(et_str) {
-                    let st = inp.split(" ").nth(1).unwrap().trim();
+                    let st = inp_lower.split(" ").nth(1).unwrap().trim();
                     if (st == "killer" && et != EnemyType::Ox)
                         || (st == "slayer" && et == EnemyType::Ox)
                     {
@@ -714,12 +715,12 @@ impl DevelopmentSkillType {
             }
         }
         // check if it is a skill whose name starts with an element
-        if inp.contains("manifestation") || inp.contains("resistance") {
-            let o_et = inp.split(" ").nth(0);
+        if inp_lower.contains("manifestation") || inp_lower.contains("resistance") {
+            let o_et = inp_lower.split(" ").nth(0);
             if let Some(mut el_str) = o_et {
                 el_str = el_str.trim();
                 if let Some(el) = Element::str_to_type(el_str) {
-                    let o_st = inp.split(" ").nth(1);
+                    let o_st = inp_lower.split(" ").nth(1);
                     if let Some(mut st) = o_st {
                         st = st.trim();
                         if st == "manifestation" {
@@ -736,13 +737,13 @@ impl DevelopmentSkillType {
             }
         }
         // Will Of Element??
-        if inp.contains("will of") {
-            let o_et = inp.split(" ").nth(2);
+        if inp_lower.contains("will of") {
+            let o_et = inp_lower.split(" ").nth(2);
             if let Some(mut et_str) = o_et {
                 et_str = et_str.trim();
                 if let Some(et) = Element::str_to_type(et_str) {
-                    let first = inp.split(" ").nth(0).unwrap().trim();
-                    let second = inp.split(" ").nth(1).unwrap().trim();
+                    let first = inp_lower.split(" ").nth(0).unwrap().trim();
+                    let second = inp_lower.split(" ").nth(1).unwrap().trim();
                     if first == "will" && second == "of" {
                         return DevelopmentSkillType::WillOf(et, DamageType::Physical);
                     }
@@ -750,7 +751,7 @@ impl DevelopmentSkillType {
             }
         }
 
-        let ty = match inp.as_str() {
+        let ty = match inp_lower.as_str() {
             "bravery" => DevelopmentSkillType::Bravery(0),
             "encouragement" => DevelopmentSkillType::Encouragement,
             "blessing" => DevelopmentSkillType::Blessing,
@@ -785,7 +786,7 @@ impl DevelopmentSkillType {
             "bloom" => DevelopmentSkillType::Bloom(0),
             "spirit healing" => DevelopmentSkillType::SpiritHealing(0),
             "luck" => DevelopmentSkillType::Luck(0),
-            _ => DevelopmentSkillType::Unknown,
+            _ => DevelopmentSkillType::Unknown(inp.to_string()),
         };
 
         ty
@@ -835,7 +836,7 @@ impl DevelopmentSkillType {
                     format!("Ability Pt. toward {}", et.to_desc_str())
                 }
             }
-            DevelopmentSkillType::Unknown => String::from(""),
+            DevelopmentSkillType::Unknown(_) => String::from(""),
         }
     }
 }

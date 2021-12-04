@@ -261,7 +261,7 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
     use DevelopmentSkillType::*;
     dev.effect = match dev_type {
         // Unrecognized development skill
-        Unknown => Unknown,
+        Unknown(title) => Unknown(title),
         // No parameters
         Encouragement | Blessing | Flashback | LiarisFreese => dev_type,
         // Only one u32
@@ -304,7 +304,7 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
         Resistance(_, _) => Resistance(adv.element.effective_against(), get_dev_modifier()),
     };
 
-    if dev.effect == Unknown {
+    if let Unknown(_) = dev.effect {
         println!("Name no recognized. A suitable section in the JSON will be created, but you will have to fill it out yourself.")
     }
 

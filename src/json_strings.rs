@@ -21,6 +21,7 @@ pub const STATS_HP: &str = "
             $4,
             $5
         ],";
+
 pub const STATS_MP: &str = "
         \"mp\": [
             $0,
@@ -469,44 +470,3 @@ pub const DEVFOOTER: &str = "
         ]
     }
 }";
-
-/*pub const DEVSKILLS: &str = "
-        \"development\": [
-            {
-                \"name\": \"<element> Manifestation: H\",
-                \"effects\": [
-                    {
-                        \"attribute\": \"<opposite element> Resist+35%. When countering and attacking, regular <dmg type>.Attack a Foe with <element> Element\",
-                        \"modifier\": \"\"
-                    }
-                ]
-            },
-            {
-                \"name\": \"skill-name\",
-                \"effects\":[
-                    {
-                        \"attribute\": \"attribute-name\",
-                        \"modifier\": \"+-0\"
-                    }
-                ]
-            },
-            {
-                \"name\": \"skill-name2\",
-                \"effects\": [
-                    {
-                        \"attribute\": \"Descrption-only attribute, e.g. counter skills. Just paste the full text\"
-                    }
-                ]
-            },
-            {
-            \"name\": \"enemy-type Killer\",
-                \"effects\": [
-                    {
-                        \"modifier\": \"+50\",
-                        \"attribute\": \"Ability Pt. toward enemy-type\"
-                    }
-                ]
-            }
-        ]
-    }
-}";*/
