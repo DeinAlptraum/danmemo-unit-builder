@@ -598,6 +598,7 @@ pub enum DevelopmentSkillType {
     MindsEye(u32),     // Mag.
     Acceleration(u32), // Agi.
     Hunter(u32),       // Agi.
+    Crafter(u32),      // Dex.
 
     // Resistances
     Protection(u32),         // P.Resist & M.Resist
@@ -672,6 +673,7 @@ impl HumanReadable for DevelopmentSkillType {
             DevelopmentSkillType::MindsEye(_) => String::from("Mind's Eye"),
             DevelopmentSkillType::Acceleration(_) => String::from("Acceleration"),
             DevelopmentSkillType::Hunter(_) => String::from("Hunter"),
+            DevelopmentSkillType::Crafter(_) => String::from("Crafter"),
             DevelopmentSkillType::Protection(_) => String::from("Protection"),
             DevelopmentSkillType::MagicResistance(_) => String::from("Magic Resistance"),
             DevelopmentSkillType::StatusResist(_) => String::from("Status Resist"),
@@ -778,6 +780,7 @@ impl DevelopmentSkillType {
             "minds eye" => DevelopmentSkillType::MindsEye(0),
             "acceleration" => DevelopmentSkillType::Acceleration(0),
             "hunter" => DevelopmentSkillType::Hunter(0),
+            "crafter" => DevelopmentSkillType::Crafter(0),
             "protection" => DevelopmentSkillType::Protection(0),
             "magic resistance" => DevelopmentSkillType::MagicResistance(0),
             "status resist" => DevelopmentSkillType::StatusResist(0),
@@ -791,6 +794,7 @@ impl DevelopmentSkillType {
             "counterattack" => DevelopmentSkillType::CounterAttack(0),
             "bloom" => DevelopmentSkillType::Bloom(0),
             "spirit healing" => DevelopmentSkillType::SpiritHealing(0),
+            "liaris freese" => DevelopmentSkillType::LiarisFreese,
             "luck" => DevelopmentSkillType::Luck(0),
             _ => DevelopmentSkillType::Unknown(inp.to_string()),
         };
@@ -822,6 +826,7 @@ impl DevelopmentSkillType {
             DevelopmentSkillType::MindsEye(_) => format!("Mag."),
             DevelopmentSkillType::Acceleration(_) => format!("Agi."),
             DevelopmentSkillType::Hunter(_) => format!("Agi."),
+            DevelopmentSkillType::Crafter(_) => format!("Dex."),
             DevelopmentSkillType::Protection(_) => format!("P.Resist & M.Resist"),
             DevelopmentSkillType::MagicResistance(_) => format!("M.Resist"),
             DevelopmentSkillType::StatusResist(_) => format!("Ailment Resist"),

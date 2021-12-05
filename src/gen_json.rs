@@ -605,6 +605,7 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
         | MindsEye(modi)
         | Acceleration(modi)
         | Hunter(modi)
+        | Crafter(modi)
         | Protection(modi)
         | MagicResistance(modi)
         | StatusResist(modi)

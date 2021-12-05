@@ -50,6 +50,9 @@ impl AssistEffect {
             Attribute::MPRegen => {
                 format!("{}{}", self.modifier, self.attribute.to_str())
             }
+            Attribute::HPRegen => {
+                format!("{}% {}", self.modifier, self.attribute.to_str())
+            }
             Attribute::Sleep
             | Attribute::Stun
             | Attribute::Seal

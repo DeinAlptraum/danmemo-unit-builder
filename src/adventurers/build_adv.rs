@@ -302,6 +302,7 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
         MindsEye(_) => MindsEye(get_dev_modifier()),
         Acceleration(_) => Acceleration(get_dev_modifier()),
         Hunter(_) => Hunter(get_dev_modifier()),
+        Crafter(_) => Crafter(get_dev_modifier()),
         Protection(_) => Protection(get_dev_modifier()),
         MagicResistance(_) => MagicResistance(get_dev_modifier()),
         StatusResist(_) => StatusResist(get_dev_modifier()),

@@ -122,8 +122,10 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
     println!("6: P.Resist, 7: M.Resist, 8: Dmg. received (Attack Type: All Targets), 9: Dmg. received (Attack Type: Single Target)");
     println!("10: Light Dmg., 11: Dark Dmg., 12: Fire Dmg., 13: Water Dmg.");
     println!("14: Thunder Dmg., 15: Earth Dmg., 16: Wind Dmg.");
-    println!("17: Critical Rate, 18: Penetration Rate, 19: Counter Rate, 20: Guard Rate");
-    println!("21: Sleep, 22: Stun, 23: Seal, 24: Slow, 25: Taunt, 26: Poison, 27: Charm");
+    println!("17: Light Resist, 18: Dark Resist, 19: Fire Resist, 20: Water Resist");
+    println!("21: Thunder Resist, 22: Earth Resist, 23: Wind Resist");
+    println!("24: Critical Rate, 25: Penetration Rate, 26: Counter Rate, 27: Guard Rate");
+    println!("28: Sleep, 29: Stun, 30: Seal, 31: Slow, 32: Taunt, 33: Poison, 34: Charm");
     'outer: loop {
         let ans = read_multinum();
         let mut res = Vec::new();
@@ -145,17 +147,24 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
                 14 => res.push(Attribute::ThunderDamage),
                 15 => res.push(Attribute::EarthDamage),
                 16 => res.push(Attribute::WindDamage),
-                17 => res.push(Attribute::CriticalRate),
-                18 => res.push(Attribute::PenetrationRate),
-                19 => res.push(Attribute::CounterRate),
-                20 => res.push(Attribute::GuardRate),
-                21 => res.push(Attribute::Sleep),
-                22 => res.push(Attribute::Stun),
-                23 => res.push(Attribute::Seal),
-                24 => res.push(Attribute::Slow),
-                25 => res.push(Attribute::Taunt),
-                26 => res.push(Attribute::Poison),
-                27 => res.push(Attribute::Charm),
+                17 => res.push(Attribute::LightResistance),
+                18 => res.push(Attribute::DarkResistance),
+                19 => res.push(Attribute::FireResistance),
+                20 => res.push(Attribute::WaterResistance),
+                21 => res.push(Attribute::ThunderResistance),
+                22 => res.push(Attribute::EarthResistance),
+                23 => res.push(Attribute::WindResistance),
+                24 => res.push(Attribute::CriticalRate),
+                25 => res.push(Attribute::PenetrationRate),
+                26 => res.push(Attribute::CounterRate),
+                27 => res.push(Attribute::GuardRate),
+                28 => res.push(Attribute::Sleep),
+                29 => res.push(Attribute::Stun),
+                30 => res.push(Attribute::Seal),
+                31 => res.push(Attribute::Slow),
+                32 => res.push(Attribute::Taunt),
+                33 => res.push(Attribute::Poison),
+                34 => res.push(Attribute::Charm),
                 _ => {
                     println!("Please enter a number from 1 to 27");
                     continue 'outer;
