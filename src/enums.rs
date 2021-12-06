@@ -109,6 +109,10 @@ pub enum Attribute {
     CounterRate,
     GuardRate,
 
+    CriticalDamage,
+    PenetrationDamage,
+    CounterDamage,
+
     // Others
     SACharge,
 
@@ -170,6 +174,9 @@ impl HumanReadable for Attribute {
             Attribute::PenetrationRate => "Penetration Rate",
             Attribute::CounterRate => "Counter Rate",
             Attribute::GuardRate => "Guard Rate",
+            Attribute::CriticalDamage => "Dmg. Upon Critical",
+            Attribute::PenetrationDamage => "Dmg. Upon Penetration",
+            Attribute::CounterDamage => "Counter Damage",
             Attribute::Heal => "HP Heal",
             Attribute::HPRegen => "HP Regen/turn",
             Attribute::MPHeal => "MP Heal",
@@ -240,6 +247,9 @@ impl Attribute {
             Attribute::PenetrationRate => "penetration_rate",
             Attribute::CounterRate => "counter_rate",
             Attribute::GuardRate => "guard_rate",
+            Attribute::CriticalDamage => "Dmg. Upon Critical",
+            Attribute::PenetrationDamage => "Dmg. Upon Penetration",
+            Attribute::CounterDamage => "Counter Damage",
             Attribute::SACharge => "sa_gauge_charge",
             Attribute::Heal => "heal",
             Attribute::HPRegen => "hp_regen",
@@ -594,6 +604,7 @@ pub enum DevelopmentSkillType {
     Climb(u32),       // End. & Agi.
     // 1 stat
     Crush(u32),        // Str.
+    FistStrike(u32),   // Str.
     Mage(u32),         // Mag.
     MindsEye(u32),     // Mag.
     Acceleration(u32), // Agi.
@@ -669,6 +680,7 @@ impl HumanReadable for DevelopmentSkillType {
             DevelopmentSkillType::Instinct(_) => String::from("Instinct"),
             DevelopmentSkillType::Climb(_) => String::from("Climb"),
             DevelopmentSkillType::Crush(_) => String::from("Crush"),
+            DevelopmentSkillType::FistStrike(_) => String::from("Fist Strike"),
             DevelopmentSkillType::Mage(_) => String::from("Mage"),
             DevelopmentSkillType::MindsEye(_) => String::from("Mind's Eye"),
             DevelopmentSkillType::Acceleration(_) => String::from("Acceleration"),
@@ -697,6 +709,14 @@ impl HumanReadable for DevelopmentSkillType {
             DevelopmentSkillType::Unknown(title) => title.to_string(),
         }
     }
+}
+
+fn from_strs(strs: Vec<&str>) -> Vec<String> {
+    let mut res = Vec::new();
+    for str in strs {
+        res.push(String::from(str));
+    }
+    res
 }
 
 impl DevelopmentSkillType {
@@ -775,6 +795,7 @@ impl DevelopmentSkillType {
             "instinct" => DevelopmentSkillType::Instinct(0),
             "climb" => DevelopmentSkillType::Climb(0),
             "crush" => DevelopmentSkillType::Crush(0),
+            "fist strike" => DevelopmentSkillType::FistStrike(0),
             "mage" => DevelopmentSkillType::Mage(0),
             "mind's eye" => DevelopmentSkillType::MindsEye(0),
             "minds eye" => DevelopmentSkillType::MindsEye(0),
@@ -802,52 +823,55 @@ impl DevelopmentSkillType {
         ty
     }
 
-    pub fn get_description(&self) -> String {
+    pub fn get_descriptions(&self) -> Vec<String> {
+        use DevelopmentSkillType::*;
+        use Attribute::*;
         match self {
-            DevelopmentSkillType::Manifestation(el, dt, modi) => format!("{} Resist +{}%. When countering and attacking, regular {}Attack a Foe with {} Element", el.effective_against().to_str(), modi, dt.to_short_str(), el.to_str()),
-            DevelopmentSkillType::Resistance(el, _) => format!("{} Resist", el.to_str()),
-            DevelopmentSkillType::WillOf(el, dt) => format!("When countering and attacking, regular {}Attack a Foe with {} Element", dt.to_short_str(), el.to_str()),
-            DevelopmentSkillType::Bravery(modi) => format!("When countering and attacking, regular attack a Foe & HP Heal {}% of Dmg.", modi),
-            DevelopmentSkillType::Encouragement => String::from("When countering, instead of attacking regularly, it (Lo) Heals an Ally. Prioritizes an Ally with lower percentage HP."),
-            DevelopmentSkillType::Blessing => String::from("When countering, instead of attacking regularly, it extends Status Buff for Allies for 1 turn."),
-            DevelopmentSkillType::Flashback => String::from("Ultra Critical Rate on Counter"),
-            DevelopmentSkillType::Hex(_) => format!("Mag., End., Agi. & Dex."),
-            DevelopmentSkillType::MartialArts(_) => format!("Str., End., Agi. & Dex."),
-            DevelopmentSkillType::Tattletale(_) => format!("Mag. & Agi. & Dex"),
-            DevelopmentSkillType::FightingSpirit(_) => format!("Str. & Agi. & Dex"),
-            DevelopmentSkillType::Rigid(_) => format!("End. & Agi. & Dex"),
-            DevelopmentSkillType::Forestall(_) => format!("Mag. & Agi."),
-            DevelopmentSkillType::BattleArts(_) => format!("Str. & Dex."),
-            DevelopmentSkillType::Concentrate(_) => format!("Agi. & Dex."),
-            DevelopmentSkillType::Instinct(_) => format!("Agi. & Dex."),
-            DevelopmentSkillType::Climb(_) => format!("End. & Agi."),
-            DevelopmentSkillType::Crush(_) => format!("Str."),
-            DevelopmentSkillType::Mage(_) => format!("Mag."),
-            DevelopmentSkillType::MindsEye(_) => format!("Mag."),
-            DevelopmentSkillType::Acceleration(_) => format!("Agi."),
-            DevelopmentSkillType::Hunter(_) => format!("Agi."),
-            DevelopmentSkillType::Crafter(_) => format!("Dex."),
-            DevelopmentSkillType::Protection(_) => format!("P.Resist & M.Resist"),
-            DevelopmentSkillType::MagicResistance(_) => format!("M.Resist"),
-            DevelopmentSkillType::StatusResist(_) => format!("Ailment Resist"),
-            DevelopmentSkillType::AbnormalResistance(_) => format!("Ailment Resist"),
-            DevelopmentSkillType::Solid(_) => format!("Guard Rate"),
-            DevelopmentSkillType::Strike(_) => format!("Critical Damage"),
-            DevelopmentSkillType::PiercingStrike(_) => format!("Penetration Damage"),
-            DevelopmentSkillType::TrueStrike(_) => format!("Dmg. Upon Critical and Penetration"),
-            DevelopmentSkillType::CounterAttack(_) => format!("Counter Damage"),
-            DevelopmentSkillType::Bloom(modi) => format!("{}% HP & MP Regen/turn", modi),
-            DevelopmentSkillType::SpiritHealing(modi) => format!("{}% MP Regen/turn", modi),
-            DevelopmentSkillType::LiarisFreese => String::from("Fast growth. Null Charm."),
-            DevelopmentSkillType::Luck(_) => format!("All Status"),
-            DevelopmentSkillType::Killer(et) => {
+            Manifestation(el, dt, modi) => vec![format!("{} Resist +{}%. When countering and attacking, regular {}Attack a Foe with {} Element", el.effective_against().to_str(), modi, dt.to_short_str(), el.to_str())],
+            Resistance(el, _) => vec![format!("{} Resist", el.to_str())],
+            WillOf(el, dt) => vec![format!("When countering and attacking, regular {}Attack a Foe with {} Element", dt.to_short_str(), el.to_str())],
+            Bravery(modi) => vec![format!("When countering and attacking, regular attack a Foe & HP Heal {}% of Dmg.", modi)],
+            Encouragement => vec![String::from("When countering, instead of attacking regularly, it (Lo) Heals an Ally. Prioritizes an Ally with lower percentage HP.")],
+            Blessing => vec![String::from("When countering, instead of attacking regularly, it extends Status Buff for Allies for 1 turn.")],
+            Flashback => vec![String::from("Ultra Critical Rate on Counter")],
+            Hex(_) => from_strs(vec![Magic.to_json(), Endurance.to_json(), Agility.to_json(), Dexterity.to_json()]),
+            MartialArts(_) => from_strs(vec![Strength.to_json(), Endurance.to_json(), Agility.to_json(), Dexterity.to_json()]),
+            Tattletale(_) => from_strs(vec![Magic.to_json(), Agility.to_json(), Dexterity.to_json()]),
+            FightingSpirit(_) => from_strs(vec![Strength.to_json(), Agility.to_json(), Dexterity.to_json()]),
+            Rigid(_) => from_strs(vec![Endurance.to_json(), Agility.to_json(), Dexterity.to_json()]),
+            Forestall(_) => from_strs(vec![Magic.to_json(), Agility.to_json()]),
+            BattleArts(_) => from_strs(vec![Strength.to_json(), Dexterity.to_json()]),
+            Concentrate(_) => from_strs(vec![Agility.to_json(), Dexterity.to_json()]),
+            Instinct(_) => from_strs(vec![Agility.to_json(), Dexterity.to_json()]),
+            Climb(_) => from_strs(vec![Endurance.to_json(), Agility.to_json()]),
+            Crush(_) => from_strs(vec![Strength.to_json()]),
+            FistStrike(_) => from_strs(vec![Strength.to_json()]),
+            Mage(_) => from_strs(vec![Magic.to_json()]),
+            MindsEye(_) => from_strs(vec![Magic.to_json()]),
+            Acceleration(_) => from_strs(vec![Agility.to_json()]),
+            Hunter(_) => from_strs(vec![Agility.to_json()]),
+            Crafter(_) => from_strs(vec![Dexterity.to_json()]),
+            Protection(_) => from_strs(vec![PhysicalResistance.to_json(), Attribute::MagicResistance.to_json()]),
+            DevelopmentSkillType::MagicResistance(_) => from_strs(vec![Attribute::MagicResistance.to_json()]),
+            StatusResist(_) => from_strs(vec![AilmentResist.to_json()]),
+            AbnormalResistance(_) => from_strs(vec![AilmentResist.to_json()]),
+            Solid(_) => from_strs(vec![GuardRate.to_json()]),
+            Strike(_) => from_strs(vec![CriticalDamage.to_json()]),
+            PiercingStrike(_) => from_strs(vec![PenetrationDamage.to_json()]),
+            TrueStrike(_) => from_strs(vec![CriticalDamage.to_json(), PenetrationDamage.to_json()]),
+            CounterAttack(_) => from_strs(vec![CounterDamage.to_json()]),
+            Bloom(_) => from_strs(vec![HPRegen.to_json(), MPRegen.to_json()]),
+            SpiritHealing(_) => from_strs(vec![MPRegen.to_json()]),
+            LiarisFreese => from_strs(vec!["fast_growth", "null_charm"]),
+            Luck(_) => from_strs(vec!["All Status"]),
+            Killer(et) => {
                 if et == &EnemyType::Ox {
-                    format!("Ability Pt. toward {}", et.to_desc_str())
+                    vec![format!("Ability Pt. toward {}", et.to_desc_str())]
                 } else {
-                    format!("Ability Pt. toward {}", et.to_desc_str())
+                    vec![format!("Ability Pt. toward {}", et.to_desc_str())]
                 }
             }
-            DevelopmentSkillType::Unknown(_) => String::from(""),
+            Unknown(_) => vec![String::from("")],
         }
     }
 }

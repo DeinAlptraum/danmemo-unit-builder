@@ -298,6 +298,7 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
         Instinct(_) => Instinct(get_dev_modifier()),
         Climb(_) => Climb(get_dev_modifier()),
         Crush(_) => Crush(get_dev_modifier()),
+        FistStrike(_) => FistStrike(get_dev_modifier()),
         Mage(_) => Mage(get_dev_modifier()),
         MindsEye(_) => MindsEye(get_dev_modifier()),
         Acceleration(_) => Acceleration(get_dev_modifier()),
@@ -346,6 +347,7 @@ fn build_dev_skills(adv: &Adventurer) -> Vec<DevelopmentSkill> {
         println!("Does the unit have another development skill? n/no: no, anything else: yes");
         let ans = read_str();
         if ans == "n" || ans == "no" {
+            println!();
             break;
         }
     }

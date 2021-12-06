@@ -577,7 +577,7 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
     let mut res = template_replace(DSHEADER, &[&ds.to_str()]);
 
     use crate::enums::DevelopmentSkillType::*;
-    let desc = &ds.effect.get_description();
+    let descs = ds.effect.get_descriptions();
     let modi = match &ds.effect {
         Manifestation(_, _, _)
         | WillOf(_, _)
@@ -585,8 +585,6 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
         | Encouragement
         | Blessing
         | Flashback
-        | Bloom(_)
-        | SpiritHealing(_)
         | LiarisFreese
         | Unknown(_) => String::from(""),
         Resistance(_, modi)
@@ -601,6 +599,7 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
         | Instinct(modi)
         | Climb(modi)
         | Crush(modi)
+        | FistStrike(modi)
         | Mage(modi)
         | MindsEye(modi)
         | Acceleration(modi)
@@ -616,6 +615,8 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
         | TrueStrike(modi)
         | CounterAttack(modi)
         | Luck(modi) => format!("+{}", modi),
+        Bloom(modi)
+        | SpiritHealing(modi) => modi.to_string(),
         Killer(et) => {
             if et == &EnemyType::Ox {
                 String::from("+100")
@@ -625,8 +626,14 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
         }
     };
 
-    let ef = template_replace(DSEFFECT, &[desc, &modi]);
-    res.push_str(&ef);
+    for desc in &descs {
+        let ef = template_replace(DSEFFECT, &[desc, &modi]);
+        res.push_str(&ef);
+        if desc != descs.last().unwrap() {
+            res.push_str(",");
+        }
+    }
+
     res.push_str(DSFOOTER);
     res
 }

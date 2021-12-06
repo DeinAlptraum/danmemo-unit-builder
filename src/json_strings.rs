@@ -454,15 +454,15 @@ pub const DEVHEADER: &str = "
 pub const DSHEADER: &str = "
             {
                 \"name\": \"$0\",
-                \"effects\": [
-                    {";
+                \"effects\": [";
 
 pub const DSEFFECT: &str = "
+                    {
                         \"attribute\": \"$0\",
-                        \"modifier\": \"$1\"";
+                        \"modifier\": \"$1\"
+                    }";
 
 pub const DSFOOTER: &str = "
-                    }
                 ]
             }";
 

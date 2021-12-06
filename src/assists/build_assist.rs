@@ -26,6 +26,7 @@ fn build_base_effects() -> Vec<AssistEffect> {
         println!("Does the skill have another regular effect? n/no: no, anything else: yes");
         let ans = read_str();
         if ans == "n" || ans == "no" {
+            println!();
             break;
         }
     }

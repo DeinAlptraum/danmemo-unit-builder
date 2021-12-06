@@ -388,24 +388,20 @@ pub fn get_null_chance() -> u32 {
 // Heals
 pub fn get_heal_target() -> Target {
     get_numeric_option(
-        "Who is the heal applied to?",
+        "\nWho is the heal applied to?",
         vec![Target::Auto, Target::Allies],
         1,
     )
 }
 
 pub fn get_hp_heal_modifier() -> HealModifier {
-    println!("Is the heal modifier-based (e.g. 'Hi Heal') or percentage-based? 1: percentage-based, 2: modifier-based");
+    println!("\nIs the heal modifier-based (e.g. 'Hi Heal') or percentage-based? 1: modifier-based, 2: percentage-based");
 
     loop {
         let ans = read_num();
         if ans == 1 {
-            return HealModifier::Numeric(get_chance(
-                "What percentage of HP does it heal? (leave out the '%' sign)",
-            ));
-        } else if ans == 2 {
             let ans = get_numeric_option(
-                "What is the modifier?",
+                "\nWhat is the modifier?",
                 vec![
                     SkillModifier::Low,
                     SkillModifier::Medium,
@@ -416,8 +412,12 @@ pub fn get_hp_heal_modifier() -> HealModifier {
                 1,
             );
             return HealModifier::SkillModifier(ans);
+        } else if ans == 2 {
+            return HealModifier::Numeric(get_chance(
+                "\nWhat percentage of HP does it heal? (leave out the '%' sign)",
+            ));
         } else {
-            println!("Please enter either 0 or 1");
+            println!("Please enter either 1 or 2");
             continue;
         }
     }
@@ -425,7 +425,7 @@ pub fn get_hp_heal_modifier() -> HealModifier {
 
 pub fn get_mp_heal_modifier() -> HealModifier {
     HealModifier::Numeric(get_chance(
-        "What percentage of MP does it heal? (leave out the '%' sign)",
+        "\nWhat percentage of MP does it heal? (leave out the '%' sign)",
     ))
 }
 
