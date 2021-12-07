@@ -112,7 +112,7 @@ pub fn get_rate_buff_mod() -> SkillModifier {
 }
 
 pub fn get_lifesteal() -> u32 {
-    get_chance("How much life steal does the attack have? (leave out the '%' sign)")
+    get_chance("\nHow much life steal does the attack have? (leave out the '%' sign)")
 }
 
 // Per Skill Effect Damage Boosts
@@ -474,8 +474,11 @@ pub fn get_ail_kind() -> Attribute {
     )
 }
 
-pub fn get_ail_chance() -> u32 {
-    get_chance("\nWhat is the chance to apply the ailment(s)? (leave out the '%' sign)")
+pub fn get_ail_chance(ail: &Attribute) -> u32 {
+    match ail {
+        Attribute::Poison => get_chance("\nWhat is the strength of the poison? (leave out the '%' sign)"),
+        _ => get_chance("\nWhat is the chance to apply the ailment(s)? (leave out the '%' sign)")
+    }
 }
 
 // Development Skills

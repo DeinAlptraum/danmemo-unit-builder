@@ -108,7 +108,7 @@ fn build_ailment() -> Ailment {
     let mut ail = Ailment::new();
     ail.target = get_ail_target();
     ail.kind = get_ail_kind();
-    ail.chance = get_ail_chance();
+    ail.chance = get_ail_chance(&ail.kind);
     ail
 }
 
@@ -180,7 +180,7 @@ pub fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     println!("3: Buff or Debuff Removal (e.g. '[Foes] removes Str. Buffs exc. Assist Skills')");
     println!("4: Buff or Debuff turn effect (e.g. '[Self] Status Debuff-2 turns')");
     println!("5: Nulls, for attacks or ailments");
-    println!("6: HP/MP Healing skills (HP heal or MP heal, NOT HP Regen!)");
+    println!("6: HP/MP Healing skills (HP heal or MP heal, NOT HP Regen or Life Steal!)");
     println!("7: Ailments (e.g. '[Foes] 35% Sleep')");
     println!("8: Ailment cure");
     println!("9: Kill resist (e.g. '[Allies] Avoids K.O x1 only when HP >= 10%)");

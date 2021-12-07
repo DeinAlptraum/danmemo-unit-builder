@@ -28,8 +28,7 @@ fn main() {
 This program operates under the following simplifying assumptions:
     Every unit uses either physical or magical attacks of one element, and all its attack skills have that damage type and element
     A phys type/magic type unit only has phys type/magic type attacks
-    per_effect type boosts for ailments don't exist
-    Buff/Debuff turns affecting skills exist only for all effect (e.g. no '[Foes] Strength Buffs -1 turn')
+    Buff/Debuff turns affecting skills exist only for all buffs/debuffs (e.g. no '[Foes] Strength Buffs -1 turn')
     Ailment cure always affects [Allies] (not true, e.g. Elven Awakening Lefiya affects Self)
     Revival skills (e.g. Forbidden Chant Fels' SA) don't exist
     Curse removal skills (e.g. Cynic Cassandra Ilion) don't exist
