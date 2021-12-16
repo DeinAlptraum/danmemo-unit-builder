@@ -247,9 +247,9 @@ impl Attribute {
             Attribute::PenetrationRate => "penetration_rate",
             Attribute::CounterRate => "counter_rate",
             Attribute::GuardRate => "guard_rate",
-            Attribute::CriticalDamage => "Dmg. Upon Critical",
-            Attribute::PenetrationDamage => "Dmg. Upon Penetration",
-            Attribute::CounterDamage => "Counter Damage",
+            Attribute::CriticalDamage => "critical_damage",
+            Attribute::PenetrationDamage => "penetration_damage",
+            Attribute::CounterDamage => "counter_damage",
             Attribute::SACharge => "sa_gauge_charge",
             Attribute::Heal => "heal",
             Attribute::HPRegen => "hp_regen",
@@ -824,8 +824,8 @@ impl DevelopmentSkillType {
     }
 
     pub fn get_descriptions(&self) -> Vec<String> {
-        use DevelopmentSkillType::*;
         use Attribute::*;
+        use DevelopmentSkillType::*;
         match self {
             Manifestation(el, dt, modi) => vec![format!("{} Resist +{}%. When countering and attacking, regular {}Attack a Foe with {} Element", el.effective_against().to_str(), modi, dt.to_short_str(), el.to_str())],
             Resistance(el, _) => vec![format!("{} Resist", el.to_str())],

@@ -34,6 +34,8 @@ This program operates under the following simplifying assumptions:
     Curse removal skills (e.g. Cynic Cassandra Ilion) don't exist
     attacks indexed to certain attributes don't exist
     attacks can't get a Dmg. boost from both regular buffs/debuffs AND ailment on a target
+    Poison ailment does not have a number of turns attribute
+    Not all development skills will be recognized by title, check the JSON afterwards and fill out manually what's missing
 Should any of these assumptions be incorrect for the unit you're creating, you will have to fix the resulting JSON yourself.\n");
 
     let unit = build_unit();

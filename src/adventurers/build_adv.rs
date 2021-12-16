@@ -2,7 +2,9 @@ use std::collections::HashSet;
 
 use super::combat_skills::*;
 use super::get_adv_attributes::*;
-use crate::enums::{Attribute, DevelopmentSkillType, HumanReadable, SkillRank, Speed};
+use crate::enums::{
+    Attribute, BuffType, DevelopmentSkillType, HumanReadable, SkillRank, Speed, Target,
+};
 use crate::get_attributes::{read_multinum, read_str};
 use crate::DevelopmentSkill;
 use crate::{Adventurer, AdventurerSkill, Unit};
@@ -36,6 +38,9 @@ fn build_per_effect_boost() -> PerEffectBuff {
     {
         ef.source = get_per_effect_boost_source();
         ef.kind = get_per_effect_boost_kind();
+    } else {
+        ef.source = Target::Foe;
+        ef.kind = BuffType::Debuff;
     }
     ef.modifier = get_per_effect_boost_mod();
     ef
@@ -138,14 +143,14 @@ fn build_effects<T: HumanReadable>(skilltype: &str, builder: fn() -> T) -> Vec<T
 }
 
 fn build_heals(mut sk: AdventurerSkill) -> AdventurerSkill {
-    println!("Which type of healing effects does the skill have? (enter applicable separated by spaces, e.g. '1 2'");
+    println!("Which type of healing effects does the skill have? (enter applicable separated by spaces, e.g. '1 2')");
     println!("1: HP healing");
     println!("2: MP healing");
     let ans = read_multinum();
 
     if ans.contains(&1) {
         let heal = Heal {
-            target: get_heal_target(),
+            target: get_heal_target(Attribute::Heal),
             heal_type: Attribute::Heal,
             modifier: get_hp_heal_modifier(),
         };
@@ -153,7 +158,7 @@ fn build_heals(mut sk: AdventurerSkill) -> AdventurerSkill {
     }
     if ans.contains(&2) {
         let heal = Heal {
-            target: get_heal_target(),
+            target: get_heal_target(Attribute::MPHeal),
             heal_type: Attribute::MPHeal,
             modifier: get_mp_heal_modifier(),
         };
@@ -174,8 +179,8 @@ fn build_kill_resist() -> KillResist {
 pub fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     let mut sk = AdventurerSkill::new();
 
-    println!("\nWhich of the following effects does the skill have? (enter applicable separated by spaces, e.g. '2 4 5'");
-    println!("1: Damaging effect (e.g '[Foe] Hi Fire P.Attack'");
+    println!("\nWhich of the following effects does the skill have? (enter applicable separated by spaces, e.g. '2 4 5')");
+    println!("1: Damaging effect (e.g '[Foe] Hi Fire P.Attack')");
     println!("2: Buffs or Debuffs, including HP Regen skills (e.g. '[Self] +80% Str. /3 turns')");
     println!("3: Buff or Debuff Removal (e.g. '[Foes] removes Str. Buffs exc. Assist Skills')");
     println!("4: Buff or Debuff turn effect (e.g. '[Self] Status Debuff-2 turns')");

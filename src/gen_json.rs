@@ -614,9 +614,9 @@ pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
         | PiercingStrike(modi)
         | TrueStrike(modi)
         | CounterAttack(modi)
+        | Bloom(modi)
+        | SpiritHealing(modi)
         | Luck(modi) => format!("+{}", modi),
-        Bloom(modi)
-        | SpiritHealing(modi) => modi.to_string(),
         Killer(et) => {
             if et == &EnemyType::Ox {
                 String::from("+100")

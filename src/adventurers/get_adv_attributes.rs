@@ -386,9 +386,14 @@ pub fn get_null_chance() -> u32 {
 }
 
 // Heals
-pub fn get_heal_target() -> Target {
+pub fn get_heal_target(attr: Attribute) -> Target {
+    let question = match &attr {
+        Attribute::Heal => "\nWho is the HP heal applied to?",
+        Attribute::MPHeal => "\nWho is the MP heal applied to?",
+        _ => "\nWho is the HP heal applied to?",
+    };
     get_numeric_option(
-        "\nWho is the heal applied to?",
+        question,
         vec![Target::Auto, Target::Allies],
         1,
     )
@@ -432,7 +437,7 @@ pub fn get_mp_heal_modifier() -> HealModifier {
 // Kill Resist
 pub fn get_kill_resist_target() -> Target {
     get_numeric_option(
-        "Who is the kill resist applied to?",
+        "\nWho is the kill resist applied to?",
         vec![Target::Auto, Target::Allies],
         1,
     )
@@ -440,7 +445,7 @@ pub fn get_kill_resist_target() -> Target {
 
 pub fn get_kill_resist_threshold() -> u32 {
     get_chance(
-        "What is the threshold below which the kill resist is removed? (leave out the '%' sign)",
+        "\nWhat is the threshold below which the kill resist is removed? (leave out the '%' sign)",
     )
 }
 
@@ -476,8 +481,10 @@ pub fn get_ail_kind() -> Attribute {
 
 pub fn get_ail_chance(ail: &Attribute) -> u32 {
     match ail {
-        Attribute::Poison => get_chance("\nWhat is the strength of the poison? (leave out the '%' sign)"),
-        _ => get_chance("\nWhat is the chance to apply the ailment(s)? (leave out the '%' sign)")
+        Attribute::Poison => {
+            get_chance("\nWhat is the strength of the poison? (leave out the '%' sign)")
+        }
+        _ => get_chance("\nWhat is the chance to apply the ailment(s)? (leave out the '%' sign)"),
     }
 }
 
