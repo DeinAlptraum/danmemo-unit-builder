@@ -392,11 +392,7 @@ pub fn get_heal_target(attr: Attribute) -> Target {
         Attribute::MPHeal => "\nWho is the MP heal applied to?",
         _ => "\nWho is the HP heal applied to?",
     };
-    get_numeric_option(
-        question,
-        vec![Target::Auto, Target::Allies],
-        1,
-    )
+    get_numeric_option(question, vec![Target::Auto, Target::Allies], 1)
 }
 
 pub fn get_hp_heal_modifier() -> HealModifier {

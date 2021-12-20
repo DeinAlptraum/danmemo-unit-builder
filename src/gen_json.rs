@@ -1,9 +1,7 @@
 use crate::combat_skills::{
     Ailment, Buff, BuffRemove, BuffTurns, Damaging, Heal, KillResist, Null, PerEffectBuff, RateBuff,
 };
-use crate::enums::{
-    Attribute, DamageType, Element, EnemyType, HumanReadable, Speed, TempBoost, UnitType,
-};
+use crate::enums::{Attribute, DamageType, Element, HumanReadable, Speed, TempBoost, UnitType};
 use crate::{json_strings::*, DevelopmentSkill, InstantSkill};
 use crate::{Adventurer, AdventurerSkill, Assist, AssistEffect, Unit};
 use regex::{Captures, Regex};
@@ -576,60 +574,17 @@ pub fn gen_aa(adv: &Adventurer) -> String {
 pub fn gen_dev_skill(ds: &DevelopmentSkill) -> String {
     let mut res = template_replace(DSHEADER, &[&ds.to_str()]);
 
-    use crate::enums::DevelopmentSkillType::*;
     let descs = ds.effect.get_descriptions();
-    let modi = match &ds.effect {
-        Manifestation(_, _, _)
-        | WillOf(_, _)
-        | Bravery(_)
-        | Encouragement
-        | Blessing
-        | Flashback
-        | LiarisFreese
-        | Unknown(_) => String::from(""),
-        Resistance(_, modi)
-        | Hex(modi)
-        | MartialArts(modi)
-        | Tattletale(modi)
-        | FightingSpirit(modi)
-        | Rigid(modi)
-        | Forestall(modi)
-        | BattleArts(modi)
-        | Concentrate(modi)
-        | Instinct(modi)
-        | Climb(modi)
-        | Crush(modi)
-        | FistStrike(modi)
-        | Mage(modi)
-        | MindsEye(modi)
-        | Acceleration(modi)
-        | Hunter(modi)
-        | Crafter(modi)
-        | Protection(modi)
-        | MagicResistance(modi)
-        | StatusResist(modi)
-        | AbnormalResistance(modi)
-        | Solid(modi)
-        | Strike(modi)
-        | PiercingStrike(modi)
-        | TrueStrike(modi)
-        | CounterAttack(modi)
-        | Bloom(modi)
-        | SpiritHealing(modi)
-        | Luck(modi) => format!("+{}", modi),
-        Killer(et) => {
-            if et == &EnemyType::Ox {
-                String::from("+100")
-            } else {
-                String::from("+50")
-            }
-        }
-    };
+    let modis = ds.effect.get_modifiers();
 
-    for desc in &descs {
-        let ef = template_replace(DSEFFECT, &[desc, &modi]);
+    for i in 0..(descs.len()) {
+        let modi = match &modis.get(i) {
+            Some(s) => s,
+            None => "",
+        };
+        let ef = template_replace(DSEFFECT, &[&descs[i], &modi]);
         res.push_str(&ef);
-        if desc != descs.last().unwrap() {
+        if i != descs.len() - 1 {
             res.push_str(",");
         }
     }

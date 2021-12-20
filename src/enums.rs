@@ -719,6 +719,17 @@ fn from_strs(strs: Vec<&str>) -> Vec<String> {
     res
 }
 
+fn multiply_vec(v: &mut Vec<String>, n: i32) {
+    if n < 2 {
+        return;
+    }
+
+    let first = v.first().unwrap().to_string();
+    for _ in 0..(n - 1) {
+        v.push(first.clone());
+    }
+}
+
 impl DevelopmentSkillType {
     pub fn str_to_type(orig_inp: &str) -> DevelopmentSkillType {
         let mut inp = orig_inp.trim().to_string();
@@ -826,24 +837,55 @@ impl DevelopmentSkillType {
     pub fn get_descriptions(&self) -> Vec<String> {
         use Attribute::*;
         use DevelopmentSkillType::*;
-        match self {
-            Manifestation(el, dt, modi) => vec![format!("{} Resist +{}%. When countering and attacking, regular {}Attack a Foe with {} Element", el.effective_against().to_str(), modi, dt.to_short_str(), el.to_str())],
-            Resistance(el, _) => vec![format!("{} Resist", el.to_str())],
+        let descs = match self {
+            Manifestation(el, dt, _) => vec![
+                format!("When countering and attacking, regular {}Attack a Foe with {} Element", dt.to_short_str(), el.to_str()),
+                format!("{}_resist", el.effective_against().to_json())],
+            Resistance(el, _) => vec![format!("{}_resist", el.to_json())],
             WillOf(el, dt) => vec![format!("When countering and attacking, regular {}Attack a Foe with {} Element", dt.to_short_str(), el.to_str())],
-            Bravery(modi) => vec![format!("When countering and attacking, regular attack a Foe & HP Heal {}% of Dmg.", modi)],
+            Bravery(_) => from_strs(vec![
+                "When countering and attacking, regular attack a Foe",
+                "life_steal"]),
             Encouragement => vec![String::from("When countering, instead of attacking regularly, it (Lo) Heals an Ally. Prioritizes an Ally with lower percentage HP.")],
             Blessing => vec![String::from("When countering, instead of attacking regularly, it extends Status Buff for Allies for 1 turn.")],
             Flashback => vec![String::from("Ultra Critical Rate on Counter")],
-            Hex(_) => from_strs(vec![Magic.to_json(), Endurance.to_json(), Agility.to_json(), Dexterity.to_json()]),
-            MartialArts(_) => from_strs(vec![Strength.to_json(), Endurance.to_json(), Agility.to_json(), Dexterity.to_json()]),
-            Tattletale(_) => from_strs(vec![Magic.to_json(), Agility.to_json(), Dexterity.to_json()]),
-            FightingSpirit(_) => from_strs(vec![Strength.to_json(), Agility.to_json(), Dexterity.to_json()]),
-            Rigid(_) => from_strs(vec![Endurance.to_json(), Agility.to_json(), Dexterity.to_json()]),
-            Forestall(_) => from_strs(vec![Magic.to_json(), Agility.to_json()]),
-            BattleArts(_) => from_strs(vec![Strength.to_json(), Dexterity.to_json()]),
-            Concentrate(_) => from_strs(vec![Agility.to_json(), Dexterity.to_json()]),
-            Instinct(_) => from_strs(vec![Agility.to_json(), Dexterity.to_json()]),
-            Climb(_) => from_strs(vec![Endurance.to_json(), Agility.to_json()]),
+            Hex(_) => from_strs(vec![
+                Magic.to_json(),
+                Endurance.to_json(),
+                Agility.to_json(),
+                Dexterity.to_json()]),
+            MartialArts(_) => from_strs(vec![
+                Strength.to_json(),
+                Endurance.to_json(),
+                Agility.to_json(),
+                Dexterity.to_json()]),
+            Tattletale(_) => from_strs(vec![
+                Magic.to_json(),
+                Agility.to_json(),
+                Dexterity.to_json()]),
+            FightingSpirit(_) => from_strs(vec![
+                Strength.to_json(),
+                Agility.to_json(),
+                Dexterity.to_json()]),
+            Rigid(_) => from_strs(vec![
+                Endurance.to_json(),
+                Agility.to_json(),
+                Dexterity.to_json()]),
+            Forestall(_) => from_strs(vec![
+                Magic.to_json(),
+                Agility.to_json()]),
+            BattleArts(_) => from_strs(vec![
+                Strength.to_json(),
+                Dexterity.to_json()]),
+            Concentrate(_) => from_strs(vec![
+                Agility.to_json(),
+                Dexterity.to_json()]),
+            Instinct(_) => from_strs(vec![
+                Agility.to_json(),
+                Dexterity.to_json()]),
+            Climb(_) => from_strs(vec![
+                Endurance.to_json(),
+                Agility.to_json()]),
             Crush(_) => from_strs(vec![Strength.to_json()]),
             FistStrike(_) => from_strs(vec![Strength.to_json()]),
             Mage(_) => from_strs(vec![Magic.to_json()]),
@@ -851,18 +893,26 @@ impl DevelopmentSkillType {
             Acceleration(_) => from_strs(vec![Agility.to_json()]),
             Hunter(_) => from_strs(vec![Agility.to_json()]),
             Crafter(_) => from_strs(vec![Dexterity.to_json()]),
-            Protection(_) => from_strs(vec![PhysicalResistance.to_json(), Attribute::MagicResistance.to_json()]),
+            Protection(_) => from_strs(vec![
+                PhysicalResistance.to_json(),
+                Attribute::MagicResistance.to_json()]),
             DevelopmentSkillType::MagicResistance(_) => from_strs(vec![Attribute::MagicResistance.to_json()]),
             StatusResist(_) => from_strs(vec![AilmentResist.to_json()]),
             AbnormalResistance(_) => from_strs(vec![AilmentResist.to_json()]),
             Solid(_) => from_strs(vec![GuardRate.to_json()]),
             Strike(_) => from_strs(vec![CriticalDamage.to_json()]),
             PiercingStrike(_) => from_strs(vec![PenetrationDamage.to_json()]),
-            TrueStrike(_) => from_strs(vec![CriticalDamage.to_json(), PenetrationDamage.to_json()]),
+            TrueStrike(_) => from_strs(vec![
+                CriticalDamage.to_json(),
+                PenetrationDamage.to_json()]),
             CounterAttack(_) => from_strs(vec![CounterDamage.to_json()]),
-            Bloom(_) => from_strs(vec![HPRegen.to_json(), MPRegen.to_json()]),
+            Bloom(_) => from_strs(vec![
+                HPRegen.to_json(),
+                MPRegen.to_json()]),
             SpiritHealing(_) => from_strs(vec![MPRegen.to_json()]),
-            LiarisFreese => from_strs(vec!["fast_growth", "null_charm"]),
+            LiarisFreese => from_strs(vec![
+                "fast_growth",
+                "null_charm"]),
             Luck(_) => from_strs(vec!["All Status"]),
             Killer(et) => {
                 if et == &EnemyType::Ox {
@@ -872,7 +922,70 @@ impl DevelopmentSkillType {
                 }
             }
             Unknown(_) => vec![String::from("")],
-        }
+        };
+
+        descs
+    }
+
+    pub fn get_modifiers(&self) -> Vec<String> {
+        use DevelopmentSkillType::*;
+
+        let mut modis = match self {
+            Manifestation(_, _, modi) | Bravery(modi) => {
+                vec![String::from(""), format!("+{}", modi)]
+            }
+            WillOf(_, _) | Encouragement | Blessing | Flashback | LiarisFreese | Unknown(_) => {
+                vec![String::from("")]
+            }
+            Resistance(_, modi)
+            | Hex(modi)
+            | MartialArts(modi)
+            | Tattletale(modi)
+            | FightingSpirit(modi)
+            | Rigid(modi)
+            | Forestall(modi)
+            | BattleArts(modi)
+            | Concentrate(modi)
+            | Instinct(modi)
+            | Climb(modi)
+            | Crush(modi)
+            | FistStrike(modi)
+            | Mage(modi)
+            | MindsEye(modi)
+            | Acceleration(modi)
+            | Hunter(modi)
+            | Crafter(modi)
+            | Protection(modi)
+            | MagicResistance(modi)
+            | StatusResist(modi)
+            | AbnormalResistance(modi)
+            | Solid(modi)
+            | Strike(modi)
+            | PiercingStrike(modi)
+            | TrueStrike(modi)
+            | CounterAttack(modi)
+            | Bloom(modi)
+            | SpiritHealing(modi)
+            | Luck(modi) => vec![format!("+{}", modi)],
+            Killer(et) => {
+                if et == &EnemyType::Ox {
+                    vec![String::from("+100")]
+                } else {
+                    vec![String::from("+50")]
+                }
+            }
+        };
+
+        let n = match self {
+            Hex(_) | MartialArts(_) => 4,
+            Tattletale(_) | FightingSpirit(_) | Rigid(_) => 3,
+            Forestall(_) | BattleArts(_) | Concentrate(_) | Instinct(_) | Climb(_)
+            | Protection(_) | TrueStrike(_) | Bloom(_) | LiarisFreese => 2,
+            _ => 1,
+        };
+        multiply_vec(&mut modis, n);
+
+        modis
     }
 }
 
