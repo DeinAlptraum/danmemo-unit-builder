@@ -4,7 +4,7 @@ use std::io::Write;
 mod json_strings;
 
 mod enums;
-use crate::enums::*;
+use enums::*;
 
 mod unit;
 pub use unit::Unit;
@@ -16,9 +16,10 @@ mod assists;
 pub use assists::*;
 
 mod get_attributes;
+use get_attributes::HIST_PATH;
 
 mod build_unit;
-use crate::build_unit::*;
+use build_unit::*;
 
 mod gen_json;
 pub use gen_json::*;
@@ -45,6 +46,8 @@ Should any of these assumptions be incorrect for the unit you're creating, you w
     } else {
         write_adv(unit);
     }
+
+    std::fs::remove_file(HIST_PATH).unwrap_or_default();
 }
 
 // Helper functions

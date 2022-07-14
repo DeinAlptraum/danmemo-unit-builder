@@ -1,15 +1,34 @@
 use crate::enums::*;
 use crate::HumanReadable;
+use rustyline::{Config, Editor};
 use std::convert::TryInto;
-use std::io::{stdin, stdout, Write};
+use std::io::{stdout, Write};
+
+pub const HIST_PATH: &str = "unit-builder-history.txt";
 
 // Helper functions
+fn init_editor() -> rustyline::Editor<()> {
+    let mut rl = Editor::<()>::with_config(Config::builder().auto_add_history(true).build());
+    rl.load_history(HIST_PATH).unwrap_or_default();
+    rl
+}
+
+fn fin_editor(mut rl: rustyline::Editor<()>) {
+    match rl.save_history(HIST_PATH) {
+        Ok(_) => (),
+        Err(_) => println!("Editor history couldn't be saved. You can probably ignore this."),
+    }
+}
+
 pub fn read_num() -> i32 {
+    let mut rl = init_editor();
     loop {
-        let mut input = String::new();
-        stdin().read_line(&mut input).expect("Error reading input. I have no idea why this is happening, but please tell me anyway so I can try to fix it.");
+        let input = rl.readline(">> ").expect("Error reading input. I have no idea why this is happening, but please tell me anyway so I can try to fix it.");
         match input.trim().parse() {
-            Ok(result) => return result,
+            Ok(result) => {
+                fin_editor(rl);
+                return result;
+            }
             Err(_) => {
                 println!("Please enter a number");
                 continue;
@@ -19,20 +38,17 @@ pub fn read_num() -> i32 {
 }
 
 pub fn read_str() -> String {
+    let mut rl = init_editor();
     loop {
-        let mut input = String::new();
-        stdin().read_line(&mut input).expect("Error!");
-        if input == "" {
-            println!("Please enter something");
-            continue;
-        }
+        let input = rl.readline(">> ").expect("Error!");
+        fin_editor(rl);
         return input.trim().to_string();
     }
 }
 
 pub fn read_multistring() -> Vec<String> {
-    let mut input = String::new();
-    stdin().read_line(&mut input).expect("Error!");
+    let mut rl = init_editor();
+    let input = rl.readline(">> ").expect("Error!");
     input.trim().to_string();
 
     let mut res = Vec::new();
@@ -40,6 +56,7 @@ pub fn read_multistring() -> Vec<String> {
         res.push(entry.trim().to_string());
     }
 
+    fin_editor(rl);
     res
 }
 
@@ -202,8 +219,8 @@ pub fn get_attr_base() -> Attribute {
             Attribute::Strength,
             Attribute::Magic,
             Attribute::Endurance,
-            Attribute::Dexterity,
             Attribute::Agility,
+            Attribute::Dexterity,
         ],
         1,
     )
