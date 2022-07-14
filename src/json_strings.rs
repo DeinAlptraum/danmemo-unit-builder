@@ -128,6 +128,13 @@ pub const ASS_EFFECT: &str = "
                         \"modifier\": \"$2\"
                     }";
 
+pub const ASS_TURN_EFFECT: &str = "
+                    {
+                        \"duration\": \"$2\",
+                        \"target\": \"$0\",
+                        \"attribute\": \"$1\"
+                    }";
+
 pub const INSTANT_EFFECT: &str = ",
                     {
                         \"modifier\": \"\",
@@ -295,6 +302,14 @@ pub const SAKILLRES: &str = "
                     \"speed\": \"None\"
                 }";
 
+pub const SAAASHORT: &str = "
+                {
+                    \"duration\": \"+$0\",
+                    \"target\": \"self\",
+                    \"attribute\": \"additional_action\",
+                    \"speed\": \"None\"
+                }";
+
 pub const SAFOOTER: &str = "
             ]
         },";
@@ -437,15 +452,19 @@ pub const REGFOOTER: &str = "
 pub const COMBATFOOTER: &str = "
         ],";
 
+pub const AASECTIONHEADER: &str = "
+        \"additionals\": [";
+
 pub const AAHEADER: &str = "
-        \"additionals\": [
             {
-                \"name\": \"\",
+                \"name\": \"$0\",
                 \"effects\": [";
 
 pub const AAFOOTER: &str = "
                 ]
-            }
+            }";
+
+pub const AASECTIONFOOTER: &str = "
         ],";
 
 pub const DEVHEADER: &str = "

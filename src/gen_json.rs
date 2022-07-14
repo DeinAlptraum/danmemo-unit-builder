@@ -79,13 +79,19 @@ fn gen_ass_effects(efs: &Vec<AssistEffect>) -> String {
     let mut res = String::new();
     for ef in efs.iter() {
         let modi = match &ef.attribute {
-            Attribute::NullPhysical | Attribute::NullMagical | Attribute::NullAilment => {
+            /*Attribute::NullPhysical | Attribute::NullMagical | Attribute::NullAilment => {
                 format!("x{}", &ef.modifier.to_string())
-            }
+            }*/
+            Attribute::AoEResistance | Attribute::STResistance => mod_to_json(ef.modifier),
             _ => ef.mod_to_str(),
         };
+
+        let mut templ = ASS_EFFECT;
+        if &ef.attribute == &Attribute::BuffTurns || &ef.attribute == &Attribute::DebuffTurns {
+            templ = ASS_TURN_EFFECT;
+        }
         res.push_str(&template_replace(
-            ASS_EFFECT,
+            templ,
             &[&ef.target.to_json(), &ef.attribute.to_json(), &modi],
         ));
         if ef != efs.last().unwrap() {
@@ -442,7 +448,7 @@ fn gen_kill_resist(
 
 fn gen_additional_action(is_sa: bool, o_aa: &Option<u32>, ef_count: &mut u32) -> String {
     if let Some(aa) = o_aa {
-        let res = gen_effect(ef_count, is_sa, REGAASHORT, REGAASHORT, &[&aa.to_string()]);
+        let res = gen_effect(ef_count, is_sa, SAAASHORT, REGAASHORT, &[&aa.to_string()]);
         return res;
     } else {
         return String::from("");
@@ -559,15 +565,22 @@ pub fn gen_adv_skills(adv: &Adventurer) -> String {
 }
 
 pub fn gen_aa(adv: &Adventurer) -> String {
-    if let Some(aa) = &adv.additional_action {
-        let mut res = template_replace(AAHEADER, &[&adv.sa.name]);
+    let mut res = AASECTIONHEADER.to_string();
+
+    for aa in &adv.additional_actions {
+        res.push_str(&template_replace(AAHEADER, &[&aa.name]));
         let efs = gen_skill_effects(false, &aa, &adv.damage_type, &adv.element);
         res.push_str(&efs);
         res.push_str(AAFOOTER);
-        return res;
-    } else {
-        return String::from("");
+
+        if aa != adv.additional_actions.last().unwrap() {
+            res.push_str(",");
+        }
     }
+
+    res.push_str(AASECTIONFOOTER);
+
+    res
 }
 
 // Development skills

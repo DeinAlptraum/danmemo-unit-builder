@@ -176,7 +176,7 @@ fn build_kill_resist() -> KillResist {
 }
 
 // Combat Skill building
-pub fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
+pub fn build_nameless_skill(is_aa: bool, has_aa: &mut bool) -> AdventurerSkill {
     let mut sk = AdventurerSkill::new();
 
     println!("\nWhich of the following effects does the skill have? (enter applicable separated by spaces, e.g. '2 4 5')");
@@ -189,7 +189,7 @@ pub fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     println!("7: Ailments (e.g. '[Foes] 35% Sleep')");
     println!("8: Ailment cure");
     println!("9: Kill resist (e.g. '[Allies] Avoids K.O x1 only when HP >= 10%)");
-    if !is_sa && !*has_aa {
+    if !is_aa {
         println!("10: Additional actions");
     }
     let ans = read_multinum();
@@ -229,7 +229,7 @@ pub fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     if ans.contains(&9) {
         sk.kill_resist = Some(build_kill_resist());
     }
-    if ans.contains(&10) && !is_sa {
+    if ans.contains(&10) && !is_aa {
         println!();
         *has_aa = true;
         sk.additional_action = Some(get_additional_action_quantity());
@@ -238,17 +238,19 @@ pub fn build_nameless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
     sk
 }
 
-fn build_speedless_skill(is_sa: bool, has_aa: &mut bool) -> AdventurerSkill {
+fn build_speedless_skill(is_aa: bool, has_aa: &mut bool) -> AdventurerSkill {
     let name = get_adv_skill_name();
-    let mut sk = build_nameless_skill(is_sa, has_aa);
+    let mut sk = build_nameless_skill(is_aa, has_aa);
     sk.name = name;
 
     sk
 }
 
-fn build_sa() -> AdventurerSkill {
+fn build_sa(additional_actions: &mut Vec<AdventurerSkill>) -> AdventurerSkill {
     println!("\n\n\nLet's build the unit's SA");
-    let sk = build_speedless_skill(true, &mut false);
+    let mut has_aa = false;
+    let sk = build_speedless_skill(false, &mut has_aa);
+    handle_additional_action(&sk, additional_actions, &mut has_aa);
     sk
 }
 
@@ -258,17 +260,32 @@ fn build_adv_skill(has_aa: &mut bool) -> AdventurerSkill {
     sk
 }
 
-fn build_adv_skills(has_aa: &mut bool) -> Vec<AdventurerSkill> {
+fn build_adv_skills(additional_actions: &mut Vec<AdventurerSkill>) -> Vec<AdventurerSkill> {
     let mut skills = Vec::new();
+    let mut has_aa = false;
     for i in 1..4 {
         println!("\n\n\nLet's build the {}. regular skill", i);
-        skills.push(build_adv_skill(has_aa));
+        skills.push(build_adv_skill(&mut has_aa));
+        handle_additional_action(skills.last().unwrap(), additional_actions, &mut has_aa);
     }
     skills
 }
 
+fn handle_additional_action(
+    last_skill: &AdventurerSkill,
+    additional_actions: &mut Vec<AdventurerSkill>,
+    has_aa: &mut bool,
+) {
+    if *has_aa {
+        println!("\n\n\nLet's build that skill's additional action");
+        let mut aa = build_additional_action();
+        aa.name = last_skill.name.clone();
+        additional_actions.push(aa);
+        *has_aa = false;
+    }
+}
+
 fn build_additional_action() -> AdventurerSkill {
-    println!("\n\n\nLet's build the unit's additional action");
     let sk = build_nameless_skill(true, &mut false);
     sk
 }
@@ -276,7 +293,9 @@ fn build_additional_action() -> AdventurerSkill {
 // Development skills
 fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
     let mut dev = DevelopmentSkill::new();
-    println!("Please enter the full name of the development skill (e.g. 'Light Manifestation: H')");
+    println!(
+        "\nPlease enter the full name of the development skill (e.g. 'Light Manifestation: H')"
+    );
     let ans = read_str();
     let dev_type = DevelopmentSkillType::str_to_type(&ans);
     if ans.contains(":") {
@@ -365,13 +384,12 @@ pub fn build_adv(unit: Unit) -> Adventurer {
     adv.adventurer_type = get_adventurer_type();
     adv.damage_type = get_dmg_type(&adv.adventurer_type);
     adv.element = get_element();
-    adv.sa = build_sa();
 
-    let mut has_aa = false;
-    adv.reg_skills = build_adv_skills(&mut has_aa);
-    if has_aa {
-        adv.additional_action = Some(build_additional_action());
-    }
+    let mut additional_actions = Vec::new();
+    adv.sa = build_sa(&mut additional_actions);
+
+    adv.reg_skills = build_adv_skills(&mut additional_actions);
+    adv.additional_actions = additional_actions;
 
     adv.dev_skills = build_dev_skills(&adv);
 
