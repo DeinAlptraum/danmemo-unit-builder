@@ -104,7 +104,7 @@ fn get_ass_modifier_null() -> i32 {
 
 fn get_ass_modifier_buff_turns() -> i32 {
     println!(
-        "\nBy how many turns does it lengthen buffs/debuffs? (negative number for decreasing turns"
+        "\nBy how many turns does it lengthen buffs/debuffs? (negative number for decreasing turns)"
     );
     read_num()
 }

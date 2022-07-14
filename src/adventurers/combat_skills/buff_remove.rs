@@ -21,6 +21,9 @@ impl BuffRemove {
             Attribute::BuffTurns | Attribute::DebuffTurns => {
                 format!("{}_removal_no_assist", self.kind.to_json_long())
             }
+            Attribute::HPRegen => {
+                format!("{}_removal_no_assist", self.attribute.to_json())
+            }
             _ => format!(
                 "{}_{}_removal_no_assist",
                 self.attribute.to_json(),

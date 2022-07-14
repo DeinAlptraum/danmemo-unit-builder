@@ -48,7 +48,7 @@ impl AssistEffect {
                 format!("{}% {}", self.modifier, self.attribute.to_str())
             }
             Attribute::MPRegen => {
-                format!("{}{}", self.modifier, self.attribute.to_str())
+                format!("{} {}", self.modifier, self.attribute.to_str())
             }
             Attribute::HPRegen => {
                 format!("{}% {}", self.modifier, self.attribute.to_str())
@@ -68,7 +68,7 @@ impl AssistEffect {
                 format!("{} {} turns", self.attribute.to_str(), self.mod_to_signed())
             }
             Attribute::SACharge => {
-                format!("Increase {} by {}", self.attribute.to_str(), self.modifier)
+                format!("Increase {} by {}%", self.attribute.to_str(), self.modifier)
             }
             _ => {
                 format!("{}{}%", self.attribute.to_str(), self.mod_to_signed())

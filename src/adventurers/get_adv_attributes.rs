@@ -118,7 +118,7 @@ pub fn get_lifesteal() -> u32 {
 // Per Skill Effect Damage Boosts
 pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
     println!("\nOn which attributes does the damage buff depend? (enter applicable separated by spaces, e.g. '2 3 12')");
-    println!("1: Strength, 2: Magic, 3: Endurance, 4: Dexterity, 5: Agility");
+    println!("1: Strength, 2: Magic, 3: Endurance, 4: Agility, 5: Dexterity");
     println!("6: P.Resist, 7: M.Resist, 8: Dmg. received (Attack Type: All Targets), 9: Dmg. received (Attack Type: Single Target)");
     println!("10: Light Dmg., 11: Dark Dmg., 12: Fire Dmg., 13: Water Dmg.");
     println!("14: Thunder Dmg., 15: Earth Dmg., 16: Wind Dmg.");
@@ -126,6 +126,7 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
     println!("21: Thunder Resist, 22: Earth Resist, 23: Wind Resist");
     println!("24: Critical Rate, 25: Penetration Rate, 26: Counter Rate, 27: Guard Rate");
     println!("28: Sleep, 29: Stun, 30: Seal, 31: Slow, 32: Taunt, 33: Poison, 34: Charm");
+    println!("35: HP Regen, 36: Heal Amount, 37: SA Gauge Charge Gain");
     'outer: loop {
         let ans = read_multinum();
         let mut res = Vec::new();
@@ -134,8 +135,8 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
                 1 => res.push(Attribute::Strength),
                 2 => res.push(Attribute::Magic),
                 3 => res.push(Attribute::Endurance),
-                4 => res.push(Attribute::Dexterity),
-                5 => res.push(Attribute::Agility),
+                4 => res.push(Attribute::Agility),
+                5 => res.push(Attribute::Dexterity),
                 6 => res.push(Attribute::PhysicalResistance),
                 7 => res.push(Attribute::MagicResistance),
                 8 => res.push(Attribute::AoEResistance),
@@ -165,6 +166,9 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
                 32 => res.push(Attribute::Taunt),
                 33 => res.push(Attribute::Poison),
                 34 => res.push(Attribute::Charm),
+                35 => res.push(Attribute::HPRegen),
+                36 => res.push(Attribute::HealRate),
+                37 => res.push(Attribute::SACharge),
                 _ => {
                     println!("Please enter a number from 1 to 27");
                     continue 'outer;
@@ -210,7 +214,7 @@ pub fn get_buff_attribute() -> Attribute {
     println!("2: Resistances");
     println!("3: All Targets or Single Target Damage");
     println!("4: Elemental damage");
-    println!("5: Rate buffs (Guard Rate etc.");
+    println!("5: Rate buffs (Guard Rate etc.)");
     println!("6: HP Regen");
     println!("7: Heal Buff (increase to amount healed by other skills)");
     println!("8: S.A Gauge Charge gain");
