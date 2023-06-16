@@ -19,13 +19,13 @@ pub fn get_element() -> Element {
         "\nWhat is the adventurer's element?",
         vec![
             Element::None,
-            Element::Light,
-            Element::Dark,
             Element::Fire,
             Element::Water,
             Element::Thunder,
             Element::Earth,
             Element::Wind,
+            Element::Light,
+            Element::Dark,
         ],
         0,
     )
@@ -46,7 +46,7 @@ pub fn get_dmg_type(at: &AdventurerType) -> DamageType {
 // Adventurer Skill
 pub fn get_adv_skill_name() -> String {
     println!("What is the name of the skill?");
-    let name = read_str();
+    let name = read_nonempty_str();
     name
 }
 
@@ -120,10 +120,10 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
     println!("\nOn which attributes does the damage buff depend? (enter applicable separated by spaces, e.g. '2 3 12')");
     println!("1: Strength, 2: Magic, 3: Endurance, 4: Agility, 5: Dexterity");
     println!("6: P.Resist, 7: M.Resist, 8: Dmg. received (Attack Type: All Targets), 9: Dmg. received (Attack Type: Single Target)");
-    println!("10: Light Dmg., 11: Dark Dmg., 12: Fire Dmg., 13: Water Dmg.");
-    println!("14: Thunder Dmg., 15: Earth Dmg., 16: Wind Dmg.");
-    println!("17: Light Resist, 18: Dark Resist, 19: Fire Resist, 20: Water Resist");
-    println!("21: Thunder Resist, 22: Earth Resist, 23: Wind Resist");
+    println!("10: Fire Dmg., 11: Water Dmg., 12: Thunder Dmg., 13: Earth Dmg.");
+    println!("14: Wind Dmg., 15: Light Dmg., 16: Dark Dmg.");
+    println!("17: Fire Resist, 18: Water Resist, 19: Thunder Resist, 20: Earth Resist");
+    println!("21: Wind Resist, 22: Light Resist, 23: Dark Resist");
     println!("24: Critical Rate, 25: Penetration Rate, 26: Counter Rate, 27: Guard Rate");
     println!("28: Sleep, 29: Stun, 30: Seal, 31: Slow, 32: Taunt, 33: Poison, 34: Charm");
     println!("35: HP Regen, 36: Heal Amount, 37: SA Gauge Charge Gain");
@@ -141,20 +141,20 @@ pub fn get_per_effect_boost_attrs() -> Vec<Attribute> {
                 7 => res.push(Attribute::MagicResistance),
                 8 => res.push(Attribute::AoEResistance),
                 9 => res.push(Attribute::STResistance),
-                10 => res.push(Attribute::LightDamage),
-                11 => res.push(Attribute::DarkDamage),
-                12 => res.push(Attribute::FireDamage),
-                13 => res.push(Attribute::WaterDamage),
-                14 => res.push(Attribute::ThunderDamage),
-                15 => res.push(Attribute::EarthDamage),
-                16 => res.push(Attribute::WindDamage),
-                17 => res.push(Attribute::LightResistance),
-                18 => res.push(Attribute::DarkResistance),
-                19 => res.push(Attribute::FireResistance),
-                20 => res.push(Attribute::WaterResistance),
-                21 => res.push(Attribute::ThunderResistance),
-                22 => res.push(Attribute::EarthResistance),
-                23 => res.push(Attribute::WindResistance),
+                10 => res.push(Attribute::FireDamage),
+                11 => res.push(Attribute::WaterDamage),
+                12 => res.push(Attribute::ThunderDamage),
+                13 => res.push(Attribute::EarthDamage),
+                14 => res.push(Attribute::WindDamage),
+                15 => res.push(Attribute::LightDamage),
+                16 => res.push(Attribute::DarkDamage),
+                17 => res.push(Attribute::FireResistance),
+                18 => res.push(Attribute::WaterResistance),
+                19 => res.push(Attribute::ThunderResistance),
+                20 => res.push(Attribute::EarthResistance),
+                21 => res.push(Attribute::WindResistance),
+                22 => res.push(Attribute::LightResistance),
+                23 => res.push(Attribute::DarkResistance),
                 24 => res.push(Attribute::CriticalRate),
                 25 => res.push(Attribute::PenetrationRate),
                 26 => res.push(Attribute::CounterRate),
@@ -202,7 +202,7 @@ pub fn get_per_effect_boost_mod() -> u32 {
 // Buffs
 pub fn get_buff_target() -> Target {
     get_numeric_option(
-        "Who is the buff/debuff's target?",
+        "\nWho is the buff/debuff's target?",
         vec![Target::Auto, Target::Allies, Target::Foe, Target::Foes],
         1,
     )
@@ -299,7 +299,7 @@ pub fn get_buff_removal_attribute(kind: &BuffType) -> Attribute {
         let ans = read_num();
         match ans {
             1 => return get_attr_base(),
-            2 => return get_attr_res_no_ailment(),
+            2 => return get_attr_res(),
             3 => return get_attr_aoe_st(),
             4 => return get_attr_el(),
             5 => return get_adv_attr_rate(),

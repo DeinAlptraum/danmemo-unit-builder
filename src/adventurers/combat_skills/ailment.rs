@@ -19,11 +19,15 @@ impl Ailment {
 
 impl HumanReadable for Ailment {
     fn to_str(&self) -> String {
-        format!(
-            "[{}] {}% {}",
-            self.target.to_str(),
-            self.chance,
-            self.kind.to_str(),
-        )
+        if self.chance < 100 {
+            format!(
+                "[{}] {}% {}",
+                self.target.to_str(),
+                self.chance,
+                self.kind.to_str(),
+            )
+        } else {
+            format!("[{}] {}", self.target.to_str(), self.kind.to_str())
+        }
     }
 }

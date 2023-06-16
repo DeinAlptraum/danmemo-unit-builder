@@ -34,7 +34,7 @@ impl AssistEffect {
             Attribute::NullPhysical | Attribute::NullMagical | Attribute::NullAilment => {
                 format!("x{}", self.modifier)
             }
-            Attribute::Heal | Attribute::MPRegen => self.modifier.to_string(),
+            Attribute::Heal | Attribute::MPRegen | Attribute::HPRegen => self.modifier.to_string(),
             _ => self.mod_to_signed(),
         }
     }

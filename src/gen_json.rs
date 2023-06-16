@@ -29,10 +29,7 @@ pub fn gen_header(unit: &Unit) -> String {
         res.push_str(ATTACKTYPE);
     }
 
-    let header2 = template_replace(
-        HEADER2,
-        &[&unit.stars.to_string(), &unit.limited.to_string()],
-    );
+    let header2 = template_replace(HEADER2, &[&unit.stars.to_string(), &unit.limited.to_json()]);
     res.push_str(&header2);
 
     res

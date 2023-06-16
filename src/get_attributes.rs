@@ -39,10 +39,18 @@ pub fn read_num() -> i32 {
 
 pub fn read_str() -> String {
     let mut rl = init_editor();
+    let input = rl.readline(">> ").expect("Error!");
+    fin_editor(rl);
+    return input.trim().to_string();
+}
+
+pub fn read_nonempty_str() -> String {
     loop {
-        let input = rl.readline(">> ").expect("Error!");
-        fin_editor(rl);
-        return input.trim().to_string();
+        let input = read_str();
+        if !input.is_empty() {
+            return input;
+        }
+        println!("Please enter something")
     }
 }
 
@@ -150,7 +158,7 @@ pub fn get_title() -> String {
     println!(
         "\nWhat is the unit's title? (e.g. \"Decisive Will\" in \"[Decisive Will] Bell Cranel\")"
     );
-    let title = read_str();
+    let title = read_nonempty_str();
     title
 }
 
@@ -158,7 +166,7 @@ pub fn get_name() -> String {
     println!(
         "\nWhat is the character's name? (e.g. \"Bell Cranel\" in \"[Decisive Will] Bell Cranel\")"
     );
-    let name = read_str();
+    let name = read_nonempty_str();
     name
 }
 
@@ -175,22 +183,16 @@ pub fn get_stars() -> i32 {
     }
 }
 
-pub fn get_limited() -> bool {
-    println!("\nIs the unit time-limited? (n/no, y/yes)");
-
-    loop {
-        let limited = read_str();
-        match limited.as_str() {
-            "n" => return false,
-            "no" => return false,
-            "yes" => return true,
-            "y" => return true,
-            _ => {
-                println!("Please enter 'n', 'no', 'y' or 'yes'");
-                continue;
-            }
-        }
-    }
+pub fn get_limited() -> LimitedType {
+    get_numeric_option(
+        "\nIs the unit time-limited?",
+        vec![
+            LimitedType::Regular,
+            LimitedType::TimeLimited,
+            LimitedType::HeroFesta,
+        ],
+        0,
+    )
 }
 
 // Stats
@@ -232,14 +234,13 @@ pub fn get_attr_res() -> Attribute {
         vec![
             Attribute::PhysicalResistance,
             Attribute::MagicResistance,
-            Attribute::LightResistance,
-            Attribute::DarkResistance,
             Attribute::FireResistance,
             Attribute::WaterResistance,
             Attribute::ThunderResistance,
             Attribute::EarthResistance,
             Attribute::WindResistance,
-            Attribute::AllElementsResistance,
+            Attribute::LightResistance,
+            Attribute::DarkResistance,
             Attribute::SleepResist,
             Attribute::StunResist,
             Attribute::SealResist,
@@ -248,25 +249,6 @@ pub fn get_attr_res() -> Attribute {
             Attribute::PoisonResist,
             Attribute::CharmResist,
             Attribute::AilmentResist,
-        ],
-        1,
-    )
-}
-
-pub fn get_attr_res_no_ailment() -> Attribute {
-    get_numeric_option(
-        "\nWhich resistance does it affect?",
-        vec![
-            Attribute::PhysicalResistance,
-            Attribute::MagicResistance,
-            Attribute::LightResistance,
-            Attribute::DarkResistance,
-            Attribute::FireResistance,
-            Attribute::WaterResistance,
-            Attribute::ThunderResistance,
-            Attribute::EarthResistance,
-            Attribute::WindResistance,
-            Attribute::AllElementsResistance,
         ],
         1,
     )
@@ -284,13 +266,13 @@ pub fn get_attr_el() -> Attribute {
     get_numeric_option(
         "\nWhich element's damage does it affect?",
         vec![
-            Attribute::LightDamage,
-            Attribute::DarkDamage,
             Attribute::FireDamage,
             Attribute::WaterDamage,
             Attribute::ThunderDamage,
             Attribute::EarthDamage,
             Attribute::WindDamage,
+            Attribute::LightDamage,
+            Attribute::DarkDamage,
         ],
         1,
     )

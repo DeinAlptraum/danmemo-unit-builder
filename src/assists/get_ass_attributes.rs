@@ -4,7 +4,7 @@ use crate::get_attributes::*;
 // Assist Skill
 pub fn get_ass_skill_name() -> String {
     println!("\nWhat is the name of the assist's skill? (without '+' at the end)");
-    let name = read_str();
+    let name = read_nonempty_str();
     name
 }
 
@@ -228,13 +228,13 @@ pub fn get_instant_element() -> Element {
         "\nWhat is the attack's element?",
         vec![
             Element::None,
-            Element::Light,
-            Element::Dark,
             Element::Fire,
             Element::Water,
             Element::Thunder,
             Element::Earth,
             Element::Wind,
+            Element::Light,
+            Element::Dark,
         ],
         0,
     )

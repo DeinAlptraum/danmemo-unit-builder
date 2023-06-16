@@ -37,12 +37,13 @@ impl HumanReadable for BuffRemove {
     fn to_str(&self) -> String {
         match self.attribute {
             Attribute::BuffTurns | Attribute::DebuffTurns => format!(
-                "[{}] removes Status {}s exc. Assist Skills",
+                "[{}] removes Status {}s",
                 self.target.to_str(),
                 self.kind.to_str()
             ),
+            Attribute::HPRegen => format!("[{}] removes HP regen effects", self.target.to_str()),
             _ => format!(
-                "[{}] removes {} {}s exc. Assist Skills",
+                "[{}] removes {} {}s",
                 self.target.to_str(),
                 self.attribute.to_str(),
                 self.kind.to_str()

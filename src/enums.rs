@@ -86,22 +86,21 @@ pub enum Attribute {
     AilmentResist,
 
     // Elementals
-    LightResistance,
-    DarkResistance,
     FireResistance,
     WaterResistance,
     ThunderResistance,
     EarthResistance,
     WindResistance,
-    AllElementsResistance,
+    LightResistance,
+    DarkResistance,
 
-    LightDamage,
-    DarkDamage,
     FireDamage,
     WaterDamage,
     ThunderDamage,
     EarthDamage,
     WindDamage,
+    LightDamage,
+    DarkDamage,
 
     // Auxiliary RNG Buffs
     CriticalRate,
@@ -155,21 +154,20 @@ impl HumanReadable for Attribute {
             Attribute::MagicResistance => "M.Resist",
             Attribute::AoEResistance => "Dmg. received (Attack Type: All Targets)",
             Attribute::STResistance => "Dmg. received (Attack Type: Single Target)",
-            Attribute::LightResistance => "Light Resist",
-            Attribute::DarkResistance => "Dark Resist",
             Attribute::FireResistance => "Fire Resist",
             Attribute::WaterResistance => "Water Resist",
             Attribute::ThunderResistance => "Thunder Resist",
             Attribute::EarthResistance => "Earth Resist",
             Attribute::WindResistance => "Wind Resist",
-            Attribute::AllElementsResistance => "Resistance against all Elements",
-            Attribute::LightDamage => "Light Attack Dmg.",
-            Attribute::DarkDamage => "Dark Attack Dmg.",
+            Attribute::LightResistance => "Light Resist",
+            Attribute::DarkResistance => "Dark Resist",
             Attribute::FireDamage => "Fire Attack Dmg.",
             Attribute::WaterDamage => "Water Attack Dmg.",
             Attribute::ThunderDamage => "Thunder Attack Dmg.",
             Attribute::EarthDamage => "Earth Attack Dmg.",
             Attribute::WindDamage => "Wind Attack Dmg.",
+            Attribute::LightDamage => "Light Attack Dmg.",
+            Attribute::DarkDamage => "Dark Attack Dmg.",
             Attribute::CriticalRate => "Critical Rate",
             Attribute::PenetrationRate => "Penetration Rate",
             Attribute::CounterRate => "Counter Rate",
@@ -178,9 +176,9 @@ impl HumanReadable for Attribute {
             Attribute::PenetrationDamage => "Dmg. Upon Penetration",
             Attribute::CounterDamage => "Counter Damage",
             Attribute::Heal => "HP Heal",
-            Attribute::HPRegen => "HP Regen/turn",
+            Attribute::HPRegen => "HP Regen turn",
             Attribute::MPHeal => "MP Heal",
-            Attribute::MPRegen => "MP Regen/turn",
+            Attribute::MPRegen => "MP Regen turn",
             Attribute::HealRate => "Heal",
             Attribute::Sleep => "Sleep",
             Attribute::Stun => "Stun",
@@ -228,21 +226,20 @@ impl Attribute {
             Attribute::PoisonResist => "poison_resist",
             Attribute::CharmResist => "charm_resist",
             Attribute::AilmentResist => "ailment_resist",
-            Attribute::LightResistance => "light_resist",
-            Attribute::DarkResistance => "dark_resist",
             Attribute::FireResistance => "fire_resist",
             Attribute::WaterResistance => "water_resist",
             Attribute::ThunderResistance => "thunder_resist",
             Attribute::EarthResistance => "earth_resist",
             Attribute::WindResistance => "wind_resist",
-            Attribute::AllElementsResistance => "fire_water_thunder_earth_wind_light_dark_resist",
-            Attribute::LightDamage => "light_attack",
-            Attribute::DarkDamage => "dark_attack",
+            Attribute::LightResistance => "light_resist",
+            Attribute::DarkResistance => "dark_resist",
             Attribute::FireDamage => "fire_attack",
             Attribute::WaterDamage => "water_attack",
             Attribute::ThunderDamage => "thunder_attack",
             Attribute::EarthDamage => "earth_attack",
             Attribute::WindDamage => "wind_attack",
+            Attribute::LightDamage => "light_attack",
+            Attribute::DarkDamage => "dark_attack",
             Attribute::CriticalRate => "critical_rate",
             Attribute::PenetrationRate => "penetration_rate",
             Attribute::CounterRate => "counter_rate",
@@ -265,9 +262,37 @@ impl Attribute {
             Attribute::Charm => "charm",
             Attribute::NullPhysical => "null_physical_attack_no_special",
             Attribute::NullMagical => "null_magic_attack_no_special",
-            Attribute::NullAilment => "null_ailments",
+            Attribute::NullAilment => "null_ailment",
             Attribute::BuffTurns => "status_buff",
             Attribute::DebuffTurns => "status_debuff",
+        }
+    }
+}
+
+#[derive(PartialEq, Eq, Clone)]
+pub enum LimitedType {
+    Regular,
+    TimeLimited,
+    HeroFesta,
+}
+
+impl HumanReadable for LimitedType {
+    fn to_str(&self) -> String {
+        match self {
+            LimitedType::Regular => "Regular",
+            LimitedType::TimeLimited => "Time-Limited",
+            LimitedType::HeroFesta => "Hero Festa",
+        }
+        .to_string()
+    }
+}
+
+impl LimitedType {
+    pub fn to_json(&self) -> &str {
+        match self {
+            LimitedType::Regular => "0",
+            LimitedType::TimeLimited => "1",
+            LimitedType::HeroFesta => "2",
         }
     }
 }
@@ -276,26 +301,26 @@ impl Attribute {
 #[derive(PartialEq, Eq, Clone)]
 pub enum Element {
     None,
-    Light,
-    Dark,
     Fire,
     Water,
     Thunder,
     Earth,
     Wind,
+    Light,
+    Dark,
 }
 
 impl HumanReadable for Element {
     fn to_str(&self) -> String {
         match self {
             Element::None => "None",
-            Element::Light => "Light",
-            Element::Dark => "Dark",
             Element::Fire => "Fire",
             Element::Water => "Water",
             Element::Thunder => "Thunder",
             Element::Earth => "Earth",
             Element::Wind => "Wind",
+            Element::Light => "Light",
+            Element::Dark => "Dark",
         }
         .to_string()
     }
@@ -305,26 +330,26 @@ impl Element {
     pub fn to_json(&self) -> &str {
         match self {
             Element::None => "None",
-            Element::Light => "light",
-            Element::Dark => "dark",
             Element::Fire => "fire",
             Element::Water => "water",
             Element::Thunder => "thunder",
             Element::Earth => "earth",
             Element::Wind => "wind",
+            Element::Light => "light",
+            Element::Dark => "dark",
         }
     }
 
     fn str_to_type(inp: &str) -> Option<Element> {
         let inp = inp.trim().to_lowercase();
         match inp.as_str() {
-            "light" => Some(Element::Light),
-            "dark" => Some(Element::Dark),
             "fire" => Some(Element::Fire),
             "water" => Some(Element::Water),
             "thunder" => Some(Element::Thunder),
             "earth" => Some(Element::Earth),
             "wind" => Some(Element::Wind),
+            "light" => Some(Element::Light),
+            "dark" => Some(Element::Dark),
             _ => None,
         }
     }
@@ -332,13 +357,13 @@ impl Element {
     pub fn effective_against(&self) -> Element {
         match self {
             Element::None => Element::None,
-            Element::Light => Element::Dark,
-            Element::Dark => Element::Light,
             Element::Fire => Element::Wind,
             Element::Water => Element::Fire,
             Element::Thunder => Element::Water,
             Element::Earth => Element::Thunder,
             Element::Wind => Element::Earth,
+            Element::Light => Element::Dark,
+            Element::Dark => Element::Light,
         }
     }
 }
@@ -475,8 +500,8 @@ pub enum TempBoost {
 impl HumanReadable for TempBoost {
     fn to_str(&self) -> String {
         match self {
-            TempBoost::Boost => "Temp. Boost",
-            TempBoost::GreatBoost => "Great Temp. Boost",
+            TempBoost::Boost => "temp Boost",
+            TempBoost::GreatBoost => "temp Great Boost",
         }
         .to_string()
     }
@@ -593,9 +618,11 @@ pub enum DevelopmentSkillType {
     Hex(u32),         // Mag., End., Agi. & Dex.
     MartialArts(u32), // Str. & End. & Agi. & Dex.
     // 3 stats
-    Tattletale(u32),     // Mag. Agi. Dex.
-    FightingSpirit(u32), // Str. Agi. Dex.
-    Rigid(u32),          // End. Agi. Dex.
+    Tattletale(u32),       // Mag. Agi. Dex.
+    FightingSpirit(u32),   // Str. Agi. Dex.
+    BravePerformance(u32), // Mag. End. Dex.
+    BattleBravery(u32),    // Str. End. Dex.
+    Rigid(u32),            // End. Agi. Dex.
     // 2 stats
     Forestall(u32),   // Mag. & Agi.
     BattleArts(u32),  // Str. & Dex.
@@ -624,8 +651,8 @@ pub enum DevelopmentSkillType {
     TrueStrike(u32),     // crit & pen dmg.
     CounterAttack(u32),  // Counter-attack, Counter Damage
 
-    Bloom(u32),         // HP & MP Regen/turn
-    SpiritHealing(u32), // MP Regen/turn
+    Bloom(u32),         // HP & MP Regen
+    SpiritHealing(u32), // MP Regen
 
     // Bell's
     LiarisFreese,
@@ -673,6 +700,8 @@ impl HumanReadable for DevelopmentSkillType {
             DevelopmentSkillType::MartialArts(_) => String::from("Martial Arts"),
             DevelopmentSkillType::Tattletale(_) => String::from("Tattletale"),
             DevelopmentSkillType::FightingSpirit(_) => String::from("Fighting Spirit"),
+            DevelopmentSkillType::BravePerformance(_) => String::from("Brave Performance"),
+            DevelopmentSkillType::BattleBravery(_) => String::from("Battle Bravery"),
             DevelopmentSkillType::Rigid(_) => String::from("Rigid"),
             DevelopmentSkillType::Forestall(_) => String::from("Forestall"),
             DevelopmentSkillType::BattleArts(_) => String::from("Battle Arts"),
@@ -799,6 +828,7 @@ impl DevelopmentSkillType {
             "martial arts" => DevelopmentSkillType::MartialArts(0),
             "tattletale" => DevelopmentSkillType::Tattletale(0),
             "fighting spirit" => DevelopmentSkillType::FightingSpirit(0),
+            "battle bravery" => DevelopmentSkillType::BattleBravery(0),
             "rigid" => DevelopmentSkillType::Rigid(0),
             "forestall" => DevelopmentSkillType::Forestall(0),
             "battle arts" => DevelopmentSkillType::BattleArts(0),
@@ -834,6 +864,101 @@ impl DevelopmentSkillType {
         ty
     }
 
+    // Modifier, Target, Attribute string
+    // pub fn get_triples(&self) -> Vec<(String, &str, String)> {
+    //     use Attribute::*;
+    //     use DevelopmentSkillType::*;
+    //     let triples = vec![(String::from(""), "", String::from(""))];
+    //     let triples = match self {
+    //         Manifestation(el, dt, modi) => vec![
+    //             (String::from(""), "None", format!("When countering and attacking, regular {}Attack a Foe with {} Element", dt.to_short_str(), el.to_str())),
+    //             (format!("+{}", modi), Target::Auto.to_json(), format!("{}_resist", el.effective_against().to_json()))],
+    //         Resistance(el, modi) => vec![(format!("+{}", modi), Target::Auto.to_json(), format!("{}_resist", el.to_json()))],
+    //         WillOf(el, dt) => vec![(String::from(""), "None", format!("When countering and attacking, regular {}Attack a Foe with {} Element", dt.to_short_str(), el.to_str()))],
+    //         Bravery(modi) => vec![
+    //             (String::from(""), "None", String::from("When countering and attacking, regular attack a Foe")),
+    //             (format!("+{}", modi), "counter", String::from("life_steal"))],
+    //         Encouragement => vec![(String::from(""), "None", String::from("When countering, instead of attacking regularly, it (Lo) Heals an Ally. Prioritizes an Ally with lower percentage HP."))],
+    //         Blessing => vec![String::from("When countering, instead of attacking regularly, it extends Status Buff for Allies for 1 turn.")],
+    //         Flashback => vec![String::from("Ultra Critical Rate on Counter")],
+    //         Hex(_) => from_strs(vec![
+    //             Magic.to_json(),
+    //             Endurance.to_json(),
+    //             Agility.to_json(),
+    //             Dexterity.to_json()]),
+    //         MartialArts(_) => from_strs(vec![
+    //             Strength.to_json(),
+    //             Endurance.to_json(),
+    //             Agility.to_json(),
+    //             Dexterity.to_json()]),
+    //         Tattletale(_) => from_strs(vec![
+    //             Magic.to_json(),
+    //             Agility.to_json(),
+    //             Dexterity.to_json()]),
+    //         FightingSpirit(_) => from_strs(vec![
+    //             Strength.to_json(),
+    //             Agility.to_json(),
+    //             Dexterity.to_json()]),
+    //         Rigid(_) => from_strs(vec![
+    //             Endurance.to_json(),
+    //             Agility.to_json(),
+    //             Dexterity.to_json()]),
+    //         Forestall(_) => from_strs(vec![
+    //             Magic.to_json(),
+    //             Agility.to_json()]),
+    //         BattleArts(_) => from_strs(vec![
+    //             Strength.to_json(),
+    //             Dexterity.to_json()]),
+    //         Concentrate(_) => from_strs(vec![
+    //             Agility.to_json(),
+    //             Dexterity.to_json()]),
+    //         Instinct(_) => from_strs(vec![
+    //             Agility.to_json(),
+    //             Dexterity.to_json()]),
+    //         Climb(_) => from_strs(vec![
+    //             Endurance.to_json(),
+    //             Agility.to_json()]),
+    //         Crush(_) => from_strs(vec![Strength.to_json()]),
+    //         FistStrike(_) => from_strs(vec![Strength.to_json()]),
+    //         Mage(_) => from_strs(vec![Magic.to_json()]),
+    //         MindsEye(_) => from_strs(vec![Magic.to_json()]),
+    //         Acceleration(_) => from_strs(vec![Agility.to_json()]),
+    //         Hunter(_) => from_strs(vec![Agility.to_json()]),
+    //         Crafter(_) => from_strs(vec![Dexterity.to_json()]),
+    //         Protection(_) => from_strs(vec![
+    //             PhysicalResistance.to_json(),
+    //             Attribute::MagicResistance.to_json()]),
+    //         DevelopmentSkillType::MagicResistance(_) => from_strs(vec![Attribute::MagicResistance.to_json()]),
+    //         StatusResist(_) => from_strs(vec![AilmentResist.to_json()]),
+    //         AbnormalResistance(_) => from_strs(vec![AilmentResist.to_json()]),
+    //         Solid(_) => from_strs(vec![GuardRate.to_json()]),
+    //         Strike(_) => from_strs(vec![CriticalDamage.to_json()]),
+    //         PiercingStrike(_) => from_strs(vec![PenetrationDamage.to_json()]),
+    //         TrueStrike(_) => from_strs(vec![
+    //             CriticalDamage.to_json(),
+    //             PenetrationDamage.to_json()]),
+    //         CounterAttack(_) => from_strs(vec![CounterDamage.to_json()]),
+    //         Bloom(_) => from_strs(vec![
+    //             HPRegen.to_json(),
+    //             MPRegen.to_json()]),
+    //         SpiritHealing(_) => from_strs(vec![MPRegen.to_json()]),
+    //         LiarisFreese => from_strs(vec![
+    //             "fast_growth",
+    //             "null_charm"]),
+    //         Luck(_) => from_strs(vec!["All Status"]),
+    //         Killer(et) => {
+    //             if et == &EnemyType::Ox {
+    //                 vec![format!("Ability Pt. toward {}", et.to_desc_str())]
+    //             } else {
+    //                 vec![format!("Ability Pt. toward {}", et.to_desc_str())]
+    //             }
+    //         }
+    //         Unknown(_) => vec![String::from("")],
+    //     };
+
+    //     triples
+    // }
+
     pub fn get_descriptions(&self) -> Vec<String> {
         use Attribute::*;
         use DevelopmentSkillType::*;
@@ -866,6 +991,14 @@ impl DevelopmentSkillType {
             FightingSpirit(_) => from_strs(vec![
                 Strength.to_json(),
                 Agility.to_json(),
+                Dexterity.to_json()]),
+            BravePerformance(_) => from_strs(vec![
+                Magic.to_json(),
+                Endurance.to_json(),
+                Dexterity.to_json()]),
+            BattleBravery(_) => from_strs(vec![
+                Strength.to_json(),
+                Endurance.to_json(),
                 Dexterity.to_json()]),
             Rigid(_) => from_strs(vec![
                 Endurance.to_json(),
@@ -931,9 +1064,10 @@ impl DevelopmentSkillType {
         use DevelopmentSkillType::*;
 
         let mut modis = match self {
-            Manifestation(_, _, modi) | Bravery(modi) => {
+            Manifestation(_, _, modi) => {
                 vec![String::from(""), format!("+{}", modi)]
             }
+            Bravery(modi) => vec![String::from(""), modi.to_string()],
             WillOf(_, _) | Encouragement | Blessing | Flashback | LiarisFreese | Unknown(_) => {
                 vec![String::from("")]
             }
@@ -942,6 +1076,8 @@ impl DevelopmentSkillType {
             | MartialArts(modi)
             | Tattletale(modi)
             | FightingSpirit(modi)
+            | BravePerformance(modi)
+            | BattleBravery(modi)
             | Rigid(modi)
             | Forestall(modi)
             | BattleArts(modi)
@@ -964,9 +1100,8 @@ impl DevelopmentSkillType {
             | PiercingStrike(modi)
             | TrueStrike(modi)
             | CounterAttack(modi)
-            | Bloom(modi)
-            | SpiritHealing(modi)
             | Luck(modi) => vec![format!("+{}", modi)],
+            Bloom(modi) | SpiritHealing(modi) => vec![modi.to_string()],
             Killer(et) => {
                 if et == &EnemyType::Ox {
                     vec![String::from("+100")]
@@ -978,7 +1113,8 @@ impl DevelopmentSkillType {
 
         let n = match self {
             Hex(_) | MartialArts(_) => 4,
-            Tattletale(_) | FightingSpirit(_) | Rigid(_) => 3,
+            Tattletale(_) | FightingSpirit(_) | BravePerformance(_) | BattleBravery(_)
+            | Rigid(_) => 3,
             Forestall(_) | BattleArts(_) | Concentrate(_) | Instinct(_) | Climb(_)
             | Protection(_) | TrueStrike(_) | Bloom(_) | LiarisFreese => 2,
             _ => 1,

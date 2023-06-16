@@ -5,7 +5,7 @@ use super::get_adv_attributes::*;
 use crate::enums::{
     Attribute, BuffType, DevelopmentSkillType, HumanReadable, SkillRank, Speed, Target,
 };
-use crate::get_attributes::{read_multinum, read_str};
+use crate::get_attributes::{read_multinum, read_nonempty_str, read_str};
 use crate::DevelopmentSkill;
 use crate::{Adventurer, AdventurerSkill, Unit};
 
@@ -119,7 +119,7 @@ fn build_ailment() -> Ailment {
 
 fn build_effects<T: HumanReadable>(skilltype: &str, builder: fn() -> T) -> Vec<T> {
     let mut effects: Vec<T> = Vec::new();
-    println!("\nLet's build the {} effects", skilltype);
+    println!("\nLet's build the {skilltype} effects");
     loop {
         let ef = builder();
         effects.push(ef);
@@ -129,10 +129,7 @@ fn build_effects<T: HumanReadable>(skilltype: &str, builder: fn() -> T) -> Vec<T
             println!("{}", ef.to_str());
         }
 
-        println!(
-            "Does the skill have another {} effect? n/no: no, anything else: yes",
-            skilltype
-        );
+        println!("\nDoes the skill have another {skilltype} effect? n/no: no, anything else: yes");
         let ans = read_str();
         if ans == "n" || ans == "no" {
             break;
@@ -182,7 +179,7 @@ pub fn build_nameless_skill(is_aa: bool, has_aa: &mut bool) -> AdventurerSkill {
     println!("\nWhich of the following effects does the skill have? (enter applicable separated by spaces, e.g. '2 4 5')");
     println!("1: Damaging effect (e.g '[Foe] Hi Fire P.Attack')");
     println!("2: Buffs or Debuffs, including HP Regen skills (e.g. '[Self] +80% Str. /3 turns')");
-    println!("3: Buff or Debuff Removal (e.g. '[Foes] removes Str. Buffs exc. Assist Skills')");
+    println!("3: Buff or Debuff Removal (e.g. '[Foes] removes Str. Buffs')");
     println!("4: Buff or Debuff turn effect (e.g. '[Self] Status Debuff-2 turns')");
     println!("5: Nulls, for attacks or ailments");
     println!("6: HP/MP Healing skills (HP heal or MP heal, NOT HP Regen or Life Steal!)");
@@ -296,7 +293,7 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
     println!(
         "\nPlease enter the full name of the development skill (e.g. 'Light Manifestation: H')"
     );
-    let ans = read_str();
+    let ans = read_nonempty_str();
     let dev_type = DevelopmentSkillType::str_to_type(&ans);
     if ans.contains(":") {
         let rk = ans.split(":").nth(1).unwrap().trim();
@@ -315,6 +312,8 @@ fn build_dev_skill(adv: &Adventurer) -> DevelopmentSkill {
         MartialArts(_) => MartialArts(get_dev_modifier()),
         Tattletale(_) => Tattletale(get_dev_modifier()),
         FightingSpirit(_) => FightingSpirit(get_dev_modifier()),
+        BravePerformance(_) => BravePerformance(get_dev_modifier()),
+        BattleBravery(_) => BattleBravery(get_dev_modifier()),
         Rigid(_) => Rigid(get_dev_modifier()),
         Forestall(_) => Forestall(get_dev_modifier()),
         BattleArts(_) => BattleArts(get_dev_modifier()),
